@@ -13,9 +13,9 @@ const Monitor = dynamic(() => import("../Monitor"), {
 const CENTER_VIEW_SCALE = 7;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.9;
-const TOTAL_NUMBER_OF_PLAYERS = 4;
+const TOTAL_NUMBER_OF_PLAYERS = 22;
 const TIME_BETWEEN_FRAMES = 100; // in ms
-const MAX_NUMBER_OF_FRAMES = 15;
+const MAX_NUMBER_OF_FRAMES = 6000; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
 const PITCH_COLOR = "#1FA01F";
 const GOAL_COLOR = "black";
 const PITCH_LENGTH = 105.0;
@@ -41,6 +41,7 @@ export default function Monitor2D(props: {
   windowHeight?: number;
   windowWidth?: number;
 }) {
+
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -97,7 +98,7 @@ export default function Monitor2D(props: {
           ballRef: ballRef,
           backgroundColor: PITCH_COLOR,
           defaultScaleValue: CENTER_VIEW_SCALE,
-          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES - 1, // - 1 because the zero counts
+          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES, // - 1 because the zero counts
           totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
         }}
         states={{
@@ -516,8 +517,8 @@ function DrawAllEntities(props: {
         color: props.ballColor,
         radius: props.ballRadius,
         ref: props.ballRef,
-        initialX: props.ballData.position[0].x,
-        initialY: props.ballData.position[0].y,
+        initialX: props.ballData[0].x,
+        initialY: props.ballData[0].y,
       })}
     </>
   );

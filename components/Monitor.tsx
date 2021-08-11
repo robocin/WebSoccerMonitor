@@ -114,7 +114,7 @@ export default function Monitor(props: {
         playersDataArray: props.data.dataObject.players,
         currentFrame: props.states.currentFrame,
         ballRef: props.config.ballRef,
-        ballDataArray: props.data.dataObject.ball.position,
+        ballDataArray: props.data.dataObject.ball,
       });
     }
   }, [props.states.currentFrame]);
