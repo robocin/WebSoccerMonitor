@@ -1,5 +1,6 @@
+import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useRef, useReducer } from "react";
 import { Rect, Circle, Line, Arc } from "react-konva";
 import Controls2D from "./Controls2D";
 import TopBar from "./TopBar2D";
@@ -9,14 +10,14 @@ const Monitor = dynamic(() => import("../Monitor"), {
 });
 
 // constantes
-const DEFAULT_SCALE_VALUE = 8;
-// const TOTAL_NUMBER_OF_PLAYERS = 22;
-const TOTAL_NUMBER_OF_PLAYERS = 2;
+const CENTER_VIEW_SCALE = 7;
+const BALL_COLOR = "white";
+const BALL_RADIUS = 0.9;
+const TOTAL_NUMBER_OF_PLAYERS = 4;
 const TIME_BETWEEN_FRAMES = 100; // in ms
-const MAX_NUMBER_OF_FRAMES = 27;
+const MAX_NUMBER_OF_FRAMES = 15;
 const PITCH_COLOR = "#1FA01F";
 const GOAL_COLOR = "black";
-const CENTER_VIEW_SCALE = 7;
 const PITCH_LENGTH = 105.0;
 const PITCH_WIDTH = 68.0;
 const PITCH_LINES_COLOR = "white";
@@ -30,16 +31,27 @@ const GOAL_WIDTH = 14.02;
 const GOAL_DEPTH = 2.44;
 const PENALTY_SPOT_DIST = 11.0;
 const CORNER_ARC_R = 1.0;
+const PLAYER_RADIUS = 1.2; //TODO! get actual default value (this is a placeholder)
+const TEAM_LEFT_COLOR = "yellow";
+const TEAM_RIGHT_COLOR = "red";
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
-  dataObject: object;
+  dataObject: any;
   windowHeight?: number;
   windowWidth?: number;
 }) {
+  // states //
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [centerView, setCenterView] = useState(false);
+
+  // Refs (references to DOM nodes) //
+  let ballRef = useRef(null);
+  let allPlayersRefs = [];
+  for (let i = 0; i < TOTAL_NUMBER_OF_PLAYERS; i++) {
+    allPlayersRefs.push(useRef(null));
+  }
 
   /**
    * Monitor2D returns a Monitor component parameterized with 2D specificities (background, player and ball drawing functions, etc)
@@ -69,9 +81,23 @@ export default function Monitor2D(props: {
               penaltySpotDistance: PENALTY_SPOT_DIST,
               pitchColor: PITCH_COLOR,
             }),
+          allPlayersRefs: allPlayersRefs,
+          DrawAllEntities: () =>
+            DrawAllEntities({
+              allPlayersData: props.dataObject.players,
+              allPlayersRef: allPlayersRefs,
+              playerRadius: PLAYER_RADIUS,
+              teamLeftColor: TEAM_LEFT_COLOR,
+              teamRightColor: TEAM_RIGHT_COLOR,
+              ballColor: BALL_COLOR,
+              ballData: props.dataObject.ball,
+              ballRadius: BALL_RADIUS,
+              ballRef: ballRef,
+            }),
+          ballRef: ballRef,
           backgroundColor: PITCH_COLOR,
           defaultScaleValue: CENTER_VIEW_SCALE,
-          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES,
+          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES - 1, // - 1 because the zero counts
           totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
         }}
         states={{
@@ -460,6 +486,110 @@ function SideSpecificBackgroundLines(props: {
         ]}
         stroke={props.goalColor}
         strokeWidth={0.1}
+      />
+    </>
+  );
+}
+
+// DrawAllEntities function definition
+function DrawAllEntities(props: {
+  playerRadius: number;
+  allPlayersRef: any;
+  allPlayersData: any;
+  teamLeftColor: string;
+  teamRightColor: string;
+  ballColor: string;
+  ballRadius: number;
+  ballRef: any;
+  ballData: any;
+}) {
+  return (
+    <>
+      {DrawAllPlayers({
+        radius: props.playerRadius,
+        allPlayersRef: props.allPlayersRef,
+        allPlayersData: props.allPlayersData,
+        teamLeftColor: props.teamLeftColor,
+        teamRightColor: props.teamRightColor,
+      })}
+      {DrawBall({
+        color: props.ballColor,
+        radius: props.ballRadius,
+        ref: props.ballRef,
+        initialX: props.ballData.position[0].x,
+        initialY: props.ballData.position[0].y,
+      })}
+    </>
+  );
+}
+
+// DrawAllPlayers function definition
+function DrawAllPlayers(props: {
+  radius: number;
+  allPlayersRef: any[];
+  allPlayersData: any[];
+  teamLeftColor: string;
+  teamRightColor: string;
+}) {
+  return (
+    <>
+      {props.allPlayersData.map((player: any, index) => {
+        return (
+          <>
+            {DrawPlayer({
+              ref: props.allPlayersRef[index],
+              radius: props.radius,
+              color:
+                player.side === "left"
+                  ? props.teamLeftColor
+                  : props.teamRightColor,
+              initialX: player.position[0].x,
+              initialY: player.position[0].y,
+            })}
+          </>
+        );
+      })}
+    </>
+  );
+}
+
+// DrawPlayer function definition
+function DrawPlayer(props: {
+  ref: any;
+  radius: number;
+  color: string;
+  initialX: number;
+  initialY: number;
+}) {
+  return (
+    <>
+      <Circle
+        ref={props.ref}
+        radius={props.radius}
+        fill={props.color}
+        x={props.initialX}
+        y={props.initialY}
+      />
+    </>
+  );
+}
+
+// DrawBall function definition
+function DrawBall(props: {
+  ref: any;
+  radius: number;
+  color: string;
+  initialX: number;
+  initialY: number;
+}) {
+  return (
+    <>
+      <Circle
+        ref={props.ref}
+        radius={props.radius}
+        fill={props.color}
+        x={props.initialX}
+        y={props.initialY}
       />
     </>
   );

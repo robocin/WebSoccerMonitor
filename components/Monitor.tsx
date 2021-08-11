@@ -16,14 +16,20 @@ export default function Monitor(props: {
     windowWidth: number;
     // color of the background everywhere
     backgroundColor: string;
-    // maximum number of frames in a match. In 2D this is equivalent to "showtime"
-    maxNumberOfFrames: number;
-    // (React Konva) function to draw the background layer
-    DrawBackgroundFunction: Function;
-    // (React Konva) default scale value of the Monitor's Stage
-    defaultScaleValue: number;
     // total number of players (sum of both teams)
     totalNumberOfPlayers: number;
+    // maximum number of frames in a match. In 2D this is equivalent to "showtime"
+    maxNumberOfFrames: number;
+    // all players refs (DOM references for updating states)
+    allPlayersRefs: any;
+    // ball ref
+    ballRef: any;
+    // (React Konva) default scale value of the Monitor's Stage
+    defaultScaleValue: number;
+    // (React Konva) function to draw the background layer
+    DrawBackgroundFunction: Function;
+    // (React Konva) function to draw all entities (players and ball)
+    DrawAllEntities: Function;
   };
   states: {
     // a match is a collection of frames, or 'snapshots', each containing the states of each game entity.
@@ -57,18 +63,8 @@ export default function Monitor(props: {
     dataObject: any;
   };
 }) {
-  /**
-   * --- Refs ---
-   *
-   * references to DOM nodes.
-   *
-   */
-  // generates an array with a ref for each player
+  // Refs (references to DOM nodes) //
   const stageRef = useRef(null);
-  let allPlayersRefs = [];
-  for (let i = 0; i < props.config.totalNumberOfPlayers; i++) {
-    allPlayersRefs.push(useRef(null));
-  }
 
   /**
    * --- useEffects ---
@@ -114,9 +110,11 @@ export default function Monitor(props: {
       props.states.setCurrentFrame((oldFrame) => oldFrame - 1);
     } else {
       updateAllEntities({
-        allPlayersRefs: allPlayersRefs,
+        allPlayersRefs: props.config.allPlayersRefs,
         playersDataArray: props.data.dataObject.players,
         currentFrame: props.states.currentFrame,
+        ballRef: props.config.ballRef,
+        ballDataArray: props.data.dataObject.ball.position,
       });
     }
   }, [props.states.currentFrame]);
@@ -137,14 +135,9 @@ export default function Monitor(props: {
           onWheel={handleWheel}
         >
           {/* background layer */}
-          <Layer>
-            {props.config.DrawBackgroundFunction(props.config.backgroundColor)}
-          </Layer>
+          <Layer>{props.config.DrawBackgroundFunction()}</Layer>
           {/* game entities layer */}
-          <Layer>
-            <Circle ref={allPlayersRefs[0]} radius={1} fill="blue" />
-            <Circle ref={allPlayersRefs[1]} radius={1} fill="yellow" />
-          </Layer>
+          <Layer>{props.config.DrawAllEntities()}</Layer>
         </Stage>
       </div>
     </div>
@@ -155,16 +148,23 @@ export default function Monitor(props: {
 function updateAllEntities(props: {
   allPlayersRefs;
   playersDataArray;
-  // ballRef,
-  // ballDataArray
+  ballRef;
+  ballDataArray;
   currentFrame;
 }) {
+  // update all players
   updateAllPlayers({
     allPlayersRefs: props.allPlayersRefs,
     playersDataArray: props.playersDataArray,
     currentFrame: props.currentFrame,
   });
-  // updateBall();
+
+  // update ball
+  UpdateEntity({
+    shape: props.ballRef.current,
+    x: props.ballDataArray[props.currentFrame].x,
+    y: props.ballDataArray[props.currentFrame].y,
+  });
 }
 
 // update all players state
@@ -174,18 +174,17 @@ function updateAllPlayers(props: {
   currentFrame;
 }) {
   props.playersDataArray.forEach((player, index) => {
-    console.log(player);
-    updatePlayer(
-      props.allPlayersRefs[index].current,
-      player.position[props.currentFrame].x,
-      player.position[props.currentFrame].y
-    );
+    UpdateEntity({
+      shape: props.allPlayersRefs[index].current,
+      x: player.position[props.currentFrame].x,
+      y: player.position[props.currentFrame].y,
+    });
   });
 }
 
-// update a player entity state
-function updatePlayer(shape, x, y) {
-  shape.to({ x: x, y: y, duration: 0 });
+// update an entity state
+function UpdateEntity(props: { shape: any; x: number; y: number }) {
+  props.shape.to({ x: props.x, y: props.y, duration: 0 });
 }
 
 function handleWheel(e) {
