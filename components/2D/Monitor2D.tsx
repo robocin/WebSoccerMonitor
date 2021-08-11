@@ -1,0 +1,466 @@
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { Rect, Circle, Line, Arc } from "react-konva";
+import Controls2D from "./Controls2D";
+import TopBar from "./TopBar2D";
+
+const Monitor = dynamic(() => import("../Monitor"), {
+  ssr: false,
+});
+
+// constantes
+const DEFAULT_SCALE_VALUE = 8;
+// const TOTAL_NUMBER_OF_PLAYERS = 22;
+const TOTAL_NUMBER_OF_PLAYERS = 2;
+const TIME_BETWEEN_FRAMES = 100; // in ms
+const MAX_NUMBER_OF_FRAMES = 27;
+const PITCH_COLOR = "#1FA01F";
+const GOAL_COLOR = "black";
+const CENTER_VIEW_SCALE = 7;
+const PITCH_LENGTH = 105.0;
+const PITCH_WIDTH = 68.0;
+const PITCH_LINES_COLOR = "white";
+const PITCH_MARGIN = 0.1;
+const CENTER_CIRCLE_R = 9.15;
+const PENALTY_AREA_LENGTH = 16.5;
+const PENALTY_AREA_WIDTH = 40.32;
+const GOAL_AREA_LENGTH = 5.5;
+const GOAL_AREA_WIDTH = 18.32;
+const GOAL_WIDTH = 14.02;
+const GOAL_DEPTH = 2.44;
+const PENALTY_SPOT_DIST = 11.0;
+const CORNER_ARC_R = 1.0;
+
+// Monitor2D function definition
+export default function Monitor2D(props: {
+  dataObject: object;
+  windowHeight?: number;
+  windowWidth?: number;
+}) {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [centerView, setCenterView] = useState(false);
+
+  /**
+   * Monitor2D returns a Monitor component parameterized with 2D specificities (background, player and ball drawing functions, etc)
+   */
+  return (
+    <div className="w-full h-full">
+      <TopBar currentFrame={currentFrame} />
+      <Monitor
+        config={{
+          windowHeight: props.windowHeight,
+          windowWidth: props.windowWidth,
+          DrawBackgroundFunction: () =>
+            DrawBackground({
+              lineColor: PITCH_LINES_COLOR,
+              pitchLength: PITCH_LENGTH,
+              pitchWidth: PITCH_WIDTH,
+              pitchMargin: PITCH_MARGIN,
+              cornerArcRadius: CORNER_ARC_R,
+              centerCircleRadius: CENTER_CIRCLE_R,
+              penaltyAreaWidth: PENALTY_AREA_WIDTH,
+              penaltyAreaLength: PENALTY_AREA_LENGTH,
+              goalAreaWidth: GOAL_AREA_WIDTH,
+              goalAreaLength: GOAL_AREA_LENGTH,
+              goalWidth: GOAL_WIDTH,
+              goalDepth: GOAL_DEPTH,
+              goalColor: GOAL_COLOR,
+              penaltySpotDistance: PENALTY_SPOT_DIST,
+              pitchColor: PITCH_COLOR,
+            }),
+          backgroundColor: PITCH_COLOR,
+          defaultScaleValue: CENTER_VIEW_SCALE,
+          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES,
+          totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
+        }}
+        states={{
+          currentFrame: currentFrame,
+          setCurrentFrame: setCurrentFrame,
+          isPlaying: isPlaying,
+          setIsPlaying: setIsPlaying,
+          resetView: centerView,
+          setResetView: setCenterView,
+          timeBetweenFrames: TIME_BETWEEN_FRAMES,
+        }}
+        data={{
+          setTimeBetweenFrames: null,
+          dataObject: props.dataObject,
+        }}
+      />
+
+      <Controls2D
+        endGameFrame={MAX_NUMBER_OF_FRAMES}
+        currentFrame={currentFrame}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        setCenterView={() => setCenterView(true)}
+        setCurrentFrame={setCurrentFrame}
+      />
+    </div>
+  );
+}
+
+// DrawBackground function definition
+function DrawBackground(props: {
+  lineColor: string;
+  pitchLength: number;
+  pitchWidth: number;
+  pitchMargin: number;
+  cornerArcRadius: number;
+  centerCircleRadius: number;
+  penaltyAreaWidth: number;
+  penaltyAreaLength: number;
+  goalAreaWidth: number;
+  goalAreaLength: number;
+  goalWidth: number;
+  goalDepth: number;
+  goalColor: string;
+  penaltySpotDistance: number;
+  pitchColor: string;
+}) {
+  return (
+    <>
+      {/* General lines (outline margins and corner arcs, center circle) and middle vertical line */}
+      {BackgroundGenenralLines({
+        lineColor: props.lineColor,
+        pitchLength: props.pitchLength,
+        pitchWidth: props.pitchWidth,
+        pitchMargin: props.pitchMargin,
+        cornerArcRadius: props.cornerArcRadius,
+        centerCircleRadius: props.centerCircleRadius,
+        penaltyAreaWidth: props.penaltyAreaWidth,
+        penaltyAreaLength: props.penaltyAreaLength,
+        goalAreaWidth: props.goalAreaLength,
+        goalAreaLength: props.goalAreaLength,
+        goalWidth: props.goalWidth,
+        goalDepth: props.goalDepth,
+        goalColor: props.goalColor,
+        penaltySpotDistance: props.penaltySpotDistance,
+        pitchColor: props.pitchColor,
+      })}
+
+      {/* LEFT side specifc drawings */}
+      {SideSpecificBackgroundLines({
+        side: "left",
+        lineColor: props.lineColor,
+        pitchMargin: props.pitchMargin,
+        pitchLength: props.pitchLength,
+        pitchWidth: props.pitchWidth,
+        penaltyAreaLength: props.penaltyAreaLength,
+        penaltyAreaWidth: props.penaltyAreaWidth,
+        goalAreaWidth: props.goalAreaWidth,
+        goalAreaLength: props.goalAreaLength,
+        goalWidth: props.goalWidth,
+        goalDepth: props.goalDepth,
+        goalColor: props.goalColor,
+        penaltySpotDistance: props.penaltySpotDistance,
+        centerCircleRadius: props.centerCircleRadius,
+        pitchColor: props.pitchColor,
+      })}
+
+      {/* RIGHT side specifc drawings */}
+      {SideSpecificBackgroundLines({
+        side: "right",
+        lineColor: props.lineColor,
+        pitchMargin: props.pitchMargin,
+        pitchLength: props.pitchLength,
+        pitchWidth: props.pitchWidth,
+        penaltyAreaLength: props.penaltyAreaLength,
+        penaltyAreaWidth: props.penaltyAreaWidth,
+        goalAreaWidth: props.goalAreaWidth,
+        goalAreaLength: props.goalAreaLength,
+        goalWidth: props.goalWidth,
+        goalDepth: props.goalDepth,
+        goalColor: props.goalColor,
+        penaltySpotDistance: props.penaltySpotDistance,
+        centerCircleRadius: props.centerCircleRadius,
+        pitchColor: props.pitchColor,
+      })}
+    </>
+  );
+}
+
+// BackgroundGeneralLines function definition
+function BackgroundGenenralLines(props: {
+  lineColor: string;
+  pitchLength: number;
+  pitchWidth: number;
+  pitchMargin: number;
+  cornerArcRadius: number;
+  centerCircleRadius: number;
+  penaltyAreaWidth: number;
+  penaltyAreaLength: number;
+  goalAreaWidth: number;
+  goalAreaLength: number;
+  goalWidth: number;
+  goalDepth: number;
+  goalColor: string;
+  penaltySpotDistance: number;
+  pitchColor: string;
+}) {
+  const arcs = [
+    { x: -props.pitchLength / 2, y: -props.pitchWidth / 2, rotation: 0 },
+    { x: props.pitchLength / 2, y: -props.pitchWidth / 2, rotation: 90 },
+    { x: -props.pitchLength / 2, y: props.pitchWidth / 2, rotation: -90 },
+    { x: props.pitchLength / 2, y: props.pitchWidth / 2, rotation: 180 },
+  ];
+
+  return (
+    <>
+      {/* Outline margin Line */}
+      <Line
+        points={[
+          -props.pitchLength / 2,
+          -props.pitchWidth / 2,
+
+          props.pitchLength / 2,
+          -props.pitchWidth / 2,
+
+          props.pitchLength / 2,
+          props.pitchWidth / 2,
+
+          -props.pitchLength / 2,
+          props.pitchWidth / 2,
+
+          -props.pitchLength / 2,
+
+          -props.pitchWidth / 2,
+        ]}
+        stroke={props.lineColor ?? "white"}
+        strokeWidth={props.pitchMargin}
+      />
+      {/* Corner Arcs */}
+      {arcs.map((item, index) => {
+        return (
+          <Arc
+            key={index}
+            x={item.x}
+            y={item.y}
+            innerRadius={0}
+            outerRadius={CORNER_ARC_R}
+            stroke={props.lineColor ?? "white"}
+            strokeWidth={props.pitchMargin}
+            angle={90}
+            rotation={item.rotation}
+          />
+        );
+      })}
+      {/* Center Circle Line */}
+      <Circle
+        x={0}
+        y={0}
+        radius={props.centerCircleRadius}
+        stroke={props.lineColor ?? "white"}
+        strokeWidth={props.pitchMargin}
+      />
+      {/* Vertical line in the center */}
+      <Line
+        points={[0, -props.pitchWidth / 2, 0, props.pitchWidth / 2]}
+        stroke={props.lineColor ?? "white"}
+        strokeWidth={props.pitchMargin}
+      />
+    </>
+  );
+}
+
+// SideSpecificBackgroundLines function definition
+function SideSpecificBackgroundLines(props: {
+  side: string;
+  lineColor: string;
+  pitchMargin: number;
+  pitchLength: number;
+  pitchWidth: number;
+  penaltyAreaWidth: number;
+  penaltyAreaLength: number;
+  goalAreaWidth: number;
+  goalAreaLength: number;
+  goalWidth: number;
+  goalDepth: number;
+  goalColor: string;
+  penaltySpotDistance: number;
+  centerCircleRadius: number;
+  pitchColor: string;
+}) {
+  return (
+    <>
+      {/* Penalti Area */}
+      <Line
+        points={[
+          props.side === "left"
+            ? -props.pitchLength / 2
+            : props.pitchLength / 2,
+          -props.pitchWidth / 2 +
+            (props.pitchWidth - props.penaltyAreaWidth) / 2,
+
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.penaltyAreaLength
+            : props.pitchLength / 2 - props.penaltyAreaLength,
+          -props.pitchWidth / 2 +
+            (props.pitchWidth - props.penaltyAreaWidth) / 2,
+
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.penaltyAreaLength
+            : props.pitchLength / 2 - props.penaltyAreaLength,
+          -props.pitchWidth / 2 +
+            (props.pitchWidth - props.penaltyAreaWidth) / 2 +
+            props.penaltyAreaWidth,
+
+          props.side === "left"
+            ? -props.pitchLength / 2
+            : props.pitchLength / 2,
+          -props.pitchWidth / 2 +
+            (props.pitchWidth - props.penaltyAreaWidth) / 2 +
+            props.penaltyAreaWidth,
+        ]}
+        stroke={props.lineColor}
+        strokeWidth={props.pitchMargin}
+      />
+      {/* Goal Area */}
+      <Line
+        points={[
+          props.side === "left"
+            ? -props.pitchLength / 2
+            : props.pitchLength / 2,
+          -props.goalAreaWidth / 2,
+
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.goalAreaLength
+            : props.pitchLength / 2 - props.goalAreaLength,
+
+          -props.goalAreaWidth / 2,
+
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.goalAreaLength
+            : props.pitchLength / 2 - props.goalAreaLength,
+          props.goalAreaWidth / 2,
+
+          props.side === "left"
+            ? -props.pitchLength / 2
+            : props.pitchLength / 2,
+          props.goalAreaWidth / 2,
+        ]}
+        stroke={props.lineColor}
+        strokeWidth={props.pitchMargin}
+      />
+      {/* Goal */}
+      <Rect
+        x={
+          props.side === "left"
+            ? -props.pitchLength / 2 - 0.05
+            : props.pitchLength / 2 + 0.05 + props.goalDepth
+        }
+        y={-props.goalWidth / 2}
+        height={props.goalWidth}
+        width={-props.goalDepth}
+        fill={props.goalColor}
+      />
+      {/* Goal Arc TODO: i draw this arc in 3 steps (and with some "magic numbers"). There is probably a better way of doing this just with 'Arc'. Fix it.*/}
+      <Arc
+        x={
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.penaltySpotDistance
+            : props.pitchLength / 2 - props.penaltySpotDistance
+        }
+        y={0}
+        innerRadius={0}
+        outerRadius={props.centerCircleRadius}
+        stroke={props.lineColor}
+        strokeWidth={props.pitchMargin}
+        angle={180}
+        rotation={props.side === "left" ? 270 : 90}
+      />
+      <Rect
+        x={
+          props.side === "left"
+            ? -props.pitchLength / 2 + props.penaltySpotDistance - 1
+            : props.pitchLength / 2 - props.penaltySpotDistance - 5.45
+        }
+        y={-props.goalAreaWidth / 2 - 0.1}
+        height={props.goalAreaWidth + 2.1}
+        width={6.45}
+        fill={props.pitchColor}
+      />
+      {/* Penalty Spot Point */}
+      <Line
+        points={[
+          props.side === "left"
+            ? props.penaltySpotDistance - props.pitchLength / 2
+            : props.pitchLength / 2 - props.penaltySpotDistance,
+
+          0,
+
+          props.side === "left"
+            ? props.penaltySpotDistance - props.pitchLength / 2
+            : props.pitchLength / 2 - props.penaltySpotDistance,
+
+          0.2,
+        ]}
+        stroke={props.lineColor}
+        strokeWidth={props.pitchMargin + 0.1}
+      />
+      {/* Goal lateral point top TODO: these are kind of guessed. Check it out and fix it if necessary*/}
+      <Line
+        points={[
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          -props.goalWidth / 2 - 0.15,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          -props.goalWidth / 2 + 0.15,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          -props.goalWidth / 2 - 0.001,
+
+          props.side === "left"
+            ? props.pitchMargin - 0.1 - props.pitchLength / 2
+            : props.pitchMargin - 0.07 + props.pitchLength / 2 - 0.3,
+          -props.goalWidth / 2 - 0.001,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.18 - props.pitchLength / 2
+            : props.pitchMargin + 0.2 + props.pitchLength / 2 - 0.3,
+          -props.goalWidth / 2 - 0.001,
+        ]}
+        stroke={props.goalColor}
+        strokeWidth={0.1}
+      />
+      {/* Goal lateral point bot TODO: these are kind of guessed. Check it out and fix it if necessary*/}
+      <Line
+        points={[
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          props.goalWidth / 2 - 0.15,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          props.goalWidth / 2 + 0.15,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.04 - props.pitchLength / 2
+            : props.pitchMargin + 0.04 + props.pitchLength / 2 - 0.27,
+          props.goalWidth / 2 - 0.001,
+
+          props.side === "left"
+            ? props.pitchMargin - 0.1 - props.pitchLength / 2
+            : props.pitchMargin - 0.07 + props.pitchLength / 2 - 0.3,
+          props.goalWidth / 2 - 0.001,
+
+          props.side === "left"
+            ? props.pitchMargin + 0.18 - props.pitchLength / 2
+            : props.pitchMargin + 0.2 + props.pitchLength / 2 - 0.3,
+          props.goalWidth / 2 - 0.001,
+        ]}
+        stroke={props.goalColor}
+        strokeWidth={0.1}
+      />
+    </>
+  );
+}

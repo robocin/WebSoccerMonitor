@@ -1,0 +1,9 @@
+::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  background-color: black;
+  clip-path: polygon(0 50%, 50% 0, 100% 50%, 100% 100%, 0% 100%);
+  position: relative;
+  bottom: -12px;
+}
