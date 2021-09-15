@@ -19,8 +19,8 @@ export default function Home() {
 
     return (
       <div className="h-full" style={{ padding: MARGIN }}>
-        <div className="p-12">Top of the page</div>
-        <div className="border-2 border-black p-1">
+        <div className="text-4xl">WebSoccerMonitor</div>
+        <div className="border-2 border-black mt-12">
           <Monitor2D
             dataObject={dataObject}
             windowWidth={monitorWidth}

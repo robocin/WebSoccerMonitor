@@ -2,7 +2,7 @@ import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 import dynamic from "next/dynamic";
 import { useState, useRef, useReducer } from "react";
 import { Rect, Circle, Line, Arc } from "react-konva";
-import Controls2D from "./Controls2D";
+import Controls from "../Controls";
 import TopBar from "./TopBar2D";
 
 const Monitor = dynamic(() => import("../Monitor"), {
@@ -116,7 +116,7 @@ export default function Monitor2D(props: {
         }}
       />
 
-      <Controls2D
+      <Controls
         endGameFrame={MAX_NUMBER_OF_FRAMES}
         currentFrame={currentFrame}
         isPlaying={isPlaying}
