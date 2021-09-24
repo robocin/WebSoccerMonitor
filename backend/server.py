@@ -36,8 +36,14 @@ def convert_rcg_to_csv():
     os.system("rm log.rcg")
 
     # create dictionary that will be send back as a json string
-    # df = df.head(n=2) # TODO: delete this line!
+    df = df.head(n=500) # TODO: delete this line!
     final_json = {
+        "match":{
+            "team_l_name": str(df["team_name_l"][0]),
+            "team_r_name": str(df["team_name_r"][0]),
+            "team_l_score": [],
+            "team_r_score": []
+        },
         "ball": {
             "stats_log": []
         },
@@ -47,18 +53,24 @@ def convert_rcg_to_csv():
 
     # populate dictionary with data
     time_range = len(df["show_time"])
-    print(time_range)
 
     for i in range(0, time_range):
         final_json["ball"]["stats_log"].append({"x": df["ball_x"][i], "y": df["ball_y"][i]})
+        final_json["match"]["team_l_score"].append(int(df["team_score_l"][i]))
+        final_json["match"]["team_r_score"].append(int(df["team_score_r"][i]))
 
     for side in ["l","r"]:
         for i in range(0,QUANTITY_OF_PLAYERS_PER_TEAM):
             final_json["players"].append({ "id":i + (0 if side=="l" else 11), "side": side, "name": f"player_{side}{i+1}", "stats_log":[]}) 
             for time in range(0, time_range):
-                player_x_in_the_current_time = df[f"player_{side}{i+1}_x"][time]
-                player_y_in_the_current_time = df[f"player_{side}{i+1}_y"][time]
-                final_json["players"][i + (0 if side=="l" else 11)] ["stats_log"].append({"x": player_x_in_the_current_time, "y": player_y_in_the_current_time })
+                final_json["players"][i + (0 if side=="l" else 11)] ["stats_log"].append({
+                    "x": float(df[f"player_{side}{i+1}_x"][time]), # x position of the palyer at the current time
+                    "y": float(df[f"player_{side}{i+1}_y"][time]), # y position of the palyer at the current time
+                    "bodyAngle": float(df[f"player_{side}{i+1}_body"][time]), # angle of the body at the current time
+                    "neckAngle": float(df[f"player_{side}{i+1}_neck"][time]), # angle of the neck at the current time
+                    "viewWidth": float(df[f"player_{side}{i+1}_view_width"][time]), # width of the player view at the current time
+                    "countingKick": int(df[f"player_{side}{i+1}_counting_kick"][time]) # quantity of kicks of this player at the current time
+                    })
 
 
     os.system("rm log.rcg.csv")
