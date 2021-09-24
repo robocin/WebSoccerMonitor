@@ -1,3 +1,4 @@
+import { addBasePath } from "next/dist/next-server/lib/router/router";
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Circle } from "react-konva";
 
@@ -139,7 +140,11 @@ export default function Monitor(props: {
           {/* background layer */}
           <Layer>{props.config.DrawBackgroundFunction()}</Layer>
           {/* game entities layer */}
-          <Layer>{props.config.DrawAllEntities()}</Layer>
+          {
+            props.data.dataObject &&  
+            <Layer>{props.config.DrawAllEntities()}</Layer>
+
+          }
         </Stage>
       </div>
     </div>

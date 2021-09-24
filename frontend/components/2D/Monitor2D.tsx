@@ -1,7 +1,7 @@
 import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 import dynamic from "next/dynamic";
 import { useState, useRef, useReducer } from "react";
-import { Rect, Circle, Line, Arc } from "react-konva";
+import { Rect, Circle, Line, Arc, Wedge, Group } from "react-konva";
 import Controls from "../Controls";
 import TopBar from "./TopBar2D";
 
@@ -12,9 +12,9 @@ const Monitor = dynamic(() => import("../Monitor"), {
 // constantes
 const CENTER_VIEW_SCALE = 7;
 const BALL_COLOR = "white";
-const BALL_RADIUS = 0.9;
+const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
-const TIME_BETWEEN_FRAMES = 100; // in ms
+const TIME_BETWEEN_FRAMES = 200; // in ms
 const MAX_NUMBER_OF_FRAMES = 6000; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
 const PITCH_COLOR = "#1FA01F";
 const GOAL_COLOR = "black";
@@ -32,8 +32,10 @@ const GOAL_DEPTH = 2.44;
 const PENALTY_SPOT_DIST = 11.0;
 const CORNER_ARC_R = 1.0;
 const PLAYER_RADIUS = 1.2; //TODO! get actual default value (this is a placeholder)
-const TEAM_LEFT_COLOR = "yellow";
-const TEAM_RIGHT_COLOR = "red";
+const PLAYER_LEFT_COLOR = "yellow";
+const GOALIE_LEFT_COLOR = "lightGreen"
+const PLAYER_RIGHT_COLOR = "red";
+const GOALIE_RIGHT_COLOR = "#D358FF"
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
@@ -92,8 +94,11 @@ export default function Monitor2D(props: {
               allPlayersData: props.dataObject.players,
               allPlayersRef: allPlayersRefs,
               playerRadius: PLAYER_RADIUS,
-              teamLeftColor: TEAM_LEFT_COLOR,
-              teamRightColor: TEAM_RIGHT_COLOR,
+              playerLeftColor:PLAYER_LEFT_COLOR,
+              goalieLeftColor:GOALIE_LEFT_COLOR,
+              playerRightColor:PLAYER_RIGHT_COLOR,
+              goalieRightColor:GOALIE_RIGHT_COLOR,
+
               ballColor: BALL_COLOR,
               ballData: props.dataObject.ball,
               ballRadius: BALL_RADIUS,
@@ -466,7 +471,7 @@ function SideSpecificBackgroundLines(props: {
         stroke={props.goalColor}
         strokeWidth={0.1}
       />
-      {/* Goal lateral point bot TODO: these are kind of guessed. Check it out and fix it if necessary*/}
+      {/* Goal lateral point bottom TODO: these are kind of guessed. Check it out and fix it if necessary*/}
       <Line
         points={[
           props.side === "left"
@@ -506,8 +511,10 @@ function DrawAllEntities(props: {
   playerRadius: number;
   allPlayersRef: any;
   allPlayersData: any;
-  teamLeftColor: string;
-  teamRightColor: string;
+  playerLeftColor: string;
+  goalieLeftColor: string;
+  playerRightColor: string;
+  goalieRightColor: string;
   ballColor: string;
   ballRadius: number;
   ballRef: any;
@@ -519,8 +526,12 @@ function DrawAllEntities(props: {
         radius: props.playerRadius,
         allPlayersRef: props.allPlayersRef,
         allPlayersData: props.allPlayersData,
-        teamLeftColor: props.teamLeftColor,
-        teamRightColor: props.teamRightColor,
+        playerLeftColor: props.playerLeftColor,
+        goalieLeftColor: props.goalieLeftColor,
+        playerRightColor: props.playerRightColor,
+        goalieRightColor: props.goalieRightColor
+
+
       })}
       {DrawBall({
         color: props.ballColor,
@@ -538,8 +549,10 @@ function DrawAllPlayers(props: {
   radius: number;
   allPlayersRef: any[];
   allPlayersData: any[];
-  teamLeftColor: string;
-  teamRightColor: string;
+  playerLeftColor: string;
+  goalieLeftColor: string;
+  playerRightColor: string;
+  goalieRightColor: string;
 }) {
   return (
     <>
@@ -551,10 +564,11 @@ function DrawAllPlayers(props: {
               radius: props.radius,
               color:
                 player.side === "left"
-                  ? props.teamLeftColor
-                  : props.teamRightColor,
+                  ? (index === 0)?props.goalieLeftColor:props.playerLeftColor // if player side is left and player index on the json is 0, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team) 
+                  : (index === 11)?props.goalieRightColor:props.playerRightColor, // if player side IS NOT left and player index on the json is 11, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team)
               initialX: player.position[0].x,
               initialY: player.position[0].y,
+              playerType: (index === 1 || index === 12)?"goalie":"player" 
             })}
           </>
         );
@@ -570,16 +584,32 @@ function DrawPlayer(props: {
   color: string;
   initialX: number;
   initialY: number;
+  playerType: string;
 }) {
+
   return (
     <>
-      <Circle
-        ref={props.ref}
+      <Group 
+      ref={props.ref}
+      x={props.initialX}
+      y={props.initialY}
+
+
+      >
+        <Circle
+          radius={props.radius}
+          fill={props.color}
+        />
+
+
+        <Wedge
         radius={props.radius}
-        fill={props.color}
-        x={props.initialX}
-        y={props.initialY}
-      />
+        fill={"black"}
+        angle={180}
+        />
+      </Group>
+
+
     </>
   );
 }

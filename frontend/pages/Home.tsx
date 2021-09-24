@@ -29,7 +29,7 @@ export default function Home() {
       <div className="h-full bg-gray-20 ">
 
         {/* Top bar */}
-        <div className="flex justify-between text-left p-4 text-4xl bg-white border-b-2 border-black mb-2">
+        <div className="flex justify-between text-left p-4 text-4xl bg-white border-b-2 border-black mb-">
           <Link href="/">
             <div className="font-bold cursor-pointer">
               WebSoccerMonitor
