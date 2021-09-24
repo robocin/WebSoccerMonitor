@@ -100,7 +100,8 @@ export default function Monitor(props: {
   useEffect(() => {
     if (props.states.isPlaying === true) {
       const interval = setInterval(() => {
-        props.states.setCurrentFrame((showtime) => showtime + 1);
+        props.states.setCurrentFrame((showtime) => showtime + 1); 
+
       }, props.states.timeBetweenFrames);
       return () => clearInterval(interval);
     }
@@ -111,13 +112,15 @@ export default function Monitor(props: {
     if (props.states.currentFrame > props.config.maxNumberOfFrames) {
       props.states.setIsPlaying(0);
       props.states.setCurrentFrame((oldFrame) => oldFrame - 1);
+
+
     } else {
       updateAllEntities({
         allPlayersRefs: props.config.allPlayersRefs,
         playersDataArray: props.data.dataObject.players,
         currentFrame: props.states.currentFrame,
         ballRef: props.config.ballRef,
-        ballDataArray: props.data.dataObject.ball,
+        ballData: props.data.dataObject.ball,
       });
     }
   }, [props.states.currentFrame]);
@@ -138,7 +141,7 @@ export default function Monitor(props: {
           onWheel={props.config.lockCameraZoom?null:handleWheel}
         >
           {/* background layer */}
-          <Layer>{props.config.DrawBackgroundFunction()}</Layer>
+          <Layer >{props.config.DrawBackgroundFunction()}</Layer>
           {/* game entities layer */}
           {
             props.data.dataObject &&  
@@ -156,7 +159,7 @@ function updateAllEntities(props: {
   allPlayersRefs;
   playersDataArray;
   ballRef;
-  ballDataArray;
+  ballData;
   currentFrame;
 }) {
   // update all players
@@ -168,9 +171,10 @@ function updateAllEntities(props: {
 
   // update ball
   UpdateEntity({
+    type: "ball",
     shape: props.ballRef.current,
-    x: props.ballDataArray[props.currentFrame].x,
-    y: props.ballDataArray[props.currentFrame].y,
+    x: props.ballData.stats_log[props.currentFrame].x,
+    y: props.ballData.stats_log[props.currentFrame].y,
   });
 }
 
@@ -182,16 +186,21 @@ function updateAllPlayers(props: {
 }) {
   props.playersDataArray.forEach((player, index) => {
     UpdateEntity({
+      type: "player",
       shape: props.allPlayersRefs[index].current,
-      x: player.position[props.currentFrame].x,
-      y: player.position[props.currentFrame].y,
+      x: player.stats_log[props.currentFrame].x,
+      y: player.stats_log[props.currentFrame].y,
+      bodyAngle: player.stats_log[props.currentFrame].bodyAngle,
+      neckAngle: player.stats_log[props.currentFrame].neckAngle,
+      viewWidth: player.stats_log[props.currentFrame].viewWidth,
+
     });
   });
 }
 
 // update an entity state
-function UpdateEntity(props: { shape: any; x: number; y: number }) {
-  props.shape.to({ x: props.x, y: props.y, duration: 0 });
+function UpdateEntity(props: { type: string; shape: any; x: number; y: number; bodyAngle?: number; neckAngle?: number; viewWidth?: number }) {
+  props.shape.to({ x: props.x, y: props.y, rotation: props.bodyAngle??null, duration: 0 });
 }
 
 function handleWheel(e) {

@@ -14,8 +14,8 @@ const CENTER_VIEW_SCALE = 7;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
-const TIME_BETWEEN_FRAMES = 200; // in ms
-const MAX_NUMBER_OF_FRAMES = 6000; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
+const TIME_BETWEEN_FRAMES = 150; // in ms
+const MAX_NUMBER_OF_FRAMES = 499 //6000; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
 const PITCH_COLOR = "#1FA01F";
 const GOAL_COLOR = "black";
 const PITCH_LENGTH = 105.0;
@@ -50,6 +50,8 @@ export default function Monitor2D(props: {
 
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [currentTeamLeftScore, setCurrentTeamLeftScore] = useState(0)
+  const [currentTeamRightScore, setCurrentTeamRightScore] = useState(0)
   const [isPlaying, setIsPlaying] = useState(props.startPlaying);
   const [centerView, setCenterView] = useState(false);
 
@@ -65,7 +67,7 @@ export default function Monitor2D(props: {
    */
   return (
     <div className="w-full h-full">
-      <TopBar currentFrame={currentFrame} />
+      <TopBar currentFrame={currentFrame} team_l_name={props.dataObject.match.team_l_name} team_r_name={props.dataObject.match.team_r_name} team_l_score_log={props.dataObject.match.team_l_score} team_r_score_log={props.dataObject.match.team_r_score}/>
       <Monitor
         config={{
           windowHeight: props.windowHeight,
@@ -537,8 +539,8 @@ function DrawAllEntities(props: {
         color: props.ballColor,
         radius: props.ballRadius,
         ref: props.ballRef,
-        initialX: props.ballData[0].x,
-        initialY: props.ballData[0].y,
+        initialX: props.ballData.stats_log[0].x,
+        initialY: props.ballData.stats_log[0].y,
       })}
     </>
   );
@@ -563,12 +565,17 @@ function DrawAllPlayers(props: {
               ref: props.allPlayersRef[index],
               radius: props.radius,
               color:
-                player.side === "left"
+                player.side === "l"
                   ? (index === 0)?props.goalieLeftColor:props.playerLeftColor // if player side is left and player index on the json is 0, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team) 
                   : (index === 11)?props.goalieRightColor:props.playerRightColor, // if player side IS NOT left and player index on the json is 11, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team)
-              initialX: player.position[0].x,
-              initialY: player.position[0].y,
-              playerType: (index === 1 || index === 12)?"goalie":"player" 
+              initialX: player.stats_log[0].x,
+              initialY: player.stats_log[0].y,
+              playerType: (index === 1 || index === 12)?"goalie":"player",
+              bodyAngle: player.stats_log[0].bodyAngle,
+              neckAngle: player.stats_log[0].neckAngle,
+              viewWidth: player.stats_log[0].viewWidth,
+
+
             })}
           </>
         );
@@ -585,6 +592,9 @@ function DrawPlayer(props: {
   initialX: number;
   initialY: number;
   playerType: string;
+  bodyAngle: number;
+  neckAngle: number;
+  viewWidth: number;
 }) {
 
   return (
@@ -593,8 +603,7 @@ function DrawPlayer(props: {
       ref={props.ref}
       x={props.initialX}
       y={props.initialY}
-
-
+      rotationDeg={props.bodyAngle}
       >
         <Circle
           radius={props.radius}
