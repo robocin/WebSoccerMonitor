@@ -37,14 +37,18 @@ const TEAM_RIGHT_COLOR = "red";
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
-  dataObject: any;
+  dataObject?: any;
   windowHeight?: number;
   windowWidth?: number;
+  showControls: boolean;
+  startPlaying: boolean;
+  centerViewScale?: number;
+  lockCameraZoom: boolean;
 }) {
 
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(props.startPlaying);
   const [centerView, setCenterView] = useState(false);
 
   // Refs (references to DOM nodes) //
@@ -97,9 +101,10 @@ export default function Monitor2D(props: {
             }),
           ballRef: ballRef,
           backgroundColor: PITCH_COLOR,
-          defaultScaleValue: CENTER_VIEW_SCALE,
+          defaultScaleValue: props.centerViewScale ?? CENTER_VIEW_SCALE,
           maxNumberOfFrames: MAX_NUMBER_OF_FRAMES, // - 1 because the zero counts
           totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
+          lockCameraZoom: props.lockCameraZoom
         }}
         states={{
           currentFrame: currentFrame,
@@ -116,14 +121,18 @@ export default function Monitor2D(props: {
         }}
       />
 
-      <Controls
-        endGameFrame={MAX_NUMBER_OF_FRAMES}
-        currentFrame={currentFrame}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        setCenterView={() => setCenterView(true)}
-        setCurrentFrame={setCurrentFrame}
-      />
+      {
+        props.showControls && 
+        <Controls
+          endGameFrame={MAX_NUMBER_OF_FRAMES}
+          currentFrame={currentFrame}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          setCenterView={() => setCenterView(true)}
+          setCurrentFrame={setCurrentFrame}
+        />
+      }
+
     </div>
   );
 }

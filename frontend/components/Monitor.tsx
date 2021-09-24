@@ -24,6 +24,8 @@ export default function Monitor(props: {
     allPlayersRefs: any;
     // ball ref
     ballRef: any;
+    // true disables camera movement (locks it)
+    lockCameraZoom: boolean;
     // (React Konva) default scale value of the Monitor's Stage
     defaultScaleValue: number;
     // (React Konva) function to draw the background layer
@@ -132,7 +134,7 @@ export default function Monitor(props: {
           width={props.config.windowWidth ?? window.innerWidth}
           height={props.config.windowHeight ?? window.innerHeight}
           draggable
-          onWheel={handleWheel}
+          onWheel={props.config.lockCameraZoom?null:handleWheel}
         >
           {/* background layer */}
           <Layer>{props.config.DrawBackgroundFunction()}</Layer>

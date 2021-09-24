@@ -6,3 +6,8 @@
     - on backend/ run: pip3 install -r requirements.txt
     - on backend/rcss-log-extractor/ run: sudo apt-get install default-jre default-jdk
     - --> to start, run: python3 server.py
+
+- submodule setup
+    under the root folder, do:
+    - git submodule init
+    - git submodule update
