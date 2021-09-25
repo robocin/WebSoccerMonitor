@@ -14,9 +14,11 @@ const CENTER_VIEW_SCALE = 7;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
-const TIME_BETWEEN_FRAMES = 150; // in ms
-const MAX_NUMBER_OF_FRAMES = 499 //6000; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
-const PITCH_COLOR = "#1FA01F";
+const TIME_BETWEEN_FRAMES = 120; // in ms
+const MAX_NUMBER_OF_FRAMES = 5999; //IMPORTANT: counting with 0. so, for example, for 15 frames, the constant value must be 14.
+// const PITCH_COLOR = "#1FA01F";
+const PITCH_COLOR = "#008D2A";
+const PITCH_DARKER_STRIPES_COLOR = "#007B1D";
 const GOAL_COLOR = "black";
 const PITCH_LENGTH = 105.0;
 const PITCH_WIDTH = 68.0;
@@ -33,9 +35,16 @@ const PENALTY_SPOT_DIST = 11.0;
 const CORNER_ARC_R = 1.0;
 const PLAYER_RADIUS = 1.2; //TODO! get actual default value (this is a placeholder)
 const PLAYER_LEFT_COLOR = "yellow";
-const GOALIE_LEFT_COLOR = "lightGreen"
+const GOALIE_LEFT_COLOR = "lightGreen";
 const PLAYER_RIGHT_COLOR = "red";
-const GOALIE_RIGHT_COLOR = "#D358FF"
+const GOALIE_RIGHT_COLOR = "#D358FF";
+const VIEW_AREA_INDICATOR_LINE_COLOR = "#80c8ff";
+const VIEW_AREA_INDICATOR_LINE_WIDTH = 0.1
+const PLAYER_OUTLINE_WIDTH = 0.1
+const PLAYER_OUTLINE_COLOR = "black"
+const PLAYER_OUTLINE_KICK_COLOR = "white"
+
+
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
@@ -46,12 +55,15 @@ export default function Monitor2D(props: {
   startPlaying: boolean;
   centerViewScale?: number;
   lockCameraZoom: boolean;
+  maxNumberOfFrames?: number;
+  replayWhenReachesEnd?: boolean;
+  timeBetweenFrames?: number;
+  showPlayerViewArea?: boolean;
 }) {
-
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [currentTeamLeftScore, setCurrentTeamLeftScore] = useState(0)
-  const [currentTeamRightScore, setCurrentTeamRightScore] = useState(0)
+  const [currentTeamLeftScore, setCurrentTeamLeftScore] = useState(0);
+  const [currentTeamRightScore, setCurrentTeamRightScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(props.startPlaying);
   const [centerView, setCenterView] = useState(false);
 
@@ -67,9 +79,18 @@ export default function Monitor2D(props: {
    */
   return (
     <div className="w-full h-full">
-      <TopBar currentFrame={currentFrame} team_l_name={props.dataObject.match.team_l_name} team_r_name={props.dataObject.match.team_r_name} team_l_score_log={props.dataObject.match.team_l_score} team_r_score_log={props.dataObject.match.team_r_score}/>
+      <TopBar
+        currentFrame={currentFrame}
+        team_l_name={props.dataObject.match.team_l_name}
+        team_r_name={props.dataObject.match.team_r_name}
+        team_l_score_log={props.dataObject.match.team_l_score}
+        team_r_score_log={props.dataObject.match.team_r_score}
+        game_state_log={props.dataObject.match.game_state_log}
+      />
+
       <Monitor
         config={{
+          category: "2D",
           windowHeight: props.windowHeight,
           windowWidth: props.windowWidth,
           DrawBackgroundFunction: () =>
@@ -96,10 +117,10 @@ export default function Monitor2D(props: {
               allPlayersData: props.dataObject.players,
               allPlayersRef: allPlayersRefs,
               playerRadius: PLAYER_RADIUS,
-              playerLeftColor:PLAYER_LEFT_COLOR,
-              goalieLeftColor:GOALIE_LEFT_COLOR,
-              playerRightColor:PLAYER_RIGHT_COLOR,
-              goalieRightColor:GOALIE_RIGHT_COLOR,
+              playerLeftColor: PLAYER_LEFT_COLOR,
+              goalieLeftColor: GOALIE_LEFT_COLOR,
+              playerRightColor: PLAYER_RIGHT_COLOR,
+              goalieRightColor: GOALIE_RIGHT_COLOR,
 
               ballColor: BALL_COLOR,
               ballData: props.dataObject.ball,
@@ -109,9 +130,11 @@ export default function Monitor2D(props: {
           ballRef: ballRef,
           backgroundColor: PITCH_COLOR,
           defaultScaleValue: props.centerViewScale ?? CENTER_VIEW_SCALE,
-          maxNumberOfFrames: MAX_NUMBER_OF_FRAMES, // - 1 because the zero counts
+          maxNumberOfFrames: props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES, // - 1 because the zero counts
           totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
-          lockCameraZoom: props.lockCameraZoom
+          lockCameraZoom: props.lockCameraZoom,
+          replayWhenReachesEnd: props.replayWhenReachesEnd ?? false,
+          showPlayerViewArea: props.showPlayerViewArea ?? true,
         }}
         states={{
           currentFrame: currentFrame,
@@ -120,7 +143,7 @@ export default function Monitor2D(props: {
           setIsPlaying: setIsPlaying,
           resetView: centerView,
           setResetView: setCenterView,
-          timeBetweenFrames: TIME_BETWEEN_FRAMES,
+          timeBetweenFrames: props.timeBetweenFrames ?? TIME_BETWEEN_FRAMES,
         }}
         data={{
           setTimeBetweenFrames: null,
@@ -128,18 +151,16 @@ export default function Monitor2D(props: {
         }}
       />
 
-      {
-        props.showControls && 
+      {props.showControls && (
         <Controls
-          endGameFrame={MAX_NUMBER_OF_FRAMES}
+          endGameFrame={props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES}
           currentFrame={currentFrame}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
           setCenterView={() => setCenterView(true)}
           setCurrentFrame={setCurrentFrame}
         />
-      }
-
+      )}
     </div>
   );
 }
@@ -164,6 +185,16 @@ function DrawBackground(props: {
 }) {
   return (
     <>
+      {/* Darker pitch stripes TODO: this is almost done, but conflicts with another draw down the line. fix this.*/}
+      {/* <Rect
+        x={-props.pitchLength/2 - props.goalDepth}
+        y={-props.pitchWidth/2}
+        height={props.pitchWidth}
+        width={props.pitchLength/12 + props.goalDepth*2}
+        fill={PITCH_DARKER_STRIPES_COLOR}
+      />
+      */}
+
       {/* General lines (outline margins and corner arcs, center circle) and middle vertical line */}
       {BackgroundGenenralLines({
         lineColor: props.lineColor,
@@ -531,9 +562,7 @@ function DrawAllEntities(props: {
         playerLeftColor: props.playerLeftColor,
         goalieLeftColor: props.goalieLeftColor,
         playerRightColor: props.playerRightColor,
-        goalieRightColor: props.goalieRightColor
-
-
+        goalieRightColor: props.goalieRightColor,
       })}
       {DrawBall({
         color: props.ballColor,
@@ -559,26 +588,26 @@ function DrawAllPlayers(props: {
   return (
     <>
       {props.allPlayersData.map((player: any, index) => {
-        return (
-          <>
-            {DrawPlayer({
-              ref: props.allPlayersRef[index],
-              radius: props.radius,
-              color:
-                player.side === "l"
-                  ? (index === 0)?props.goalieLeftColor:props.playerLeftColor // if player side is left and player index on the json is 0, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team) 
-                  : (index === 11)?props.goalieRightColor:props.playerRightColor, // if player side IS NOT left and player index on the json is 11, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team)
-              initialX: player.stats_log[0].x,
-              initialY: player.stats_log[0].y,
-              playerType: (index === 1 || index === 12)?"goalie":"player",
-              bodyAngle: player.stats_log[0].bodyAngle,
-              neckAngle: player.stats_log[0].neckAngle,
-              viewWidth: player.stats_log[0].viewWidth,
-
-
-            })}
-          </>
-        );
+        return DrawPlayer({
+          key: index,
+          ref: props.allPlayersRef[index],
+          radius: props.radius,
+          color:
+            player.side === "l"
+              ? index === 0
+                ? props.goalieLeftColor
+                : props.playerLeftColor // if player side is left and player index on the json is 0, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team)
+              : index === 11
+              ? props.goalieRightColor
+              : props.playerRightColor, // if player side IS NOT left and player index on the json is 11, then it is the goalie of the left team //TODO: change from player index on json to player id (local to the team)
+          initialX: player.stats_log[0].x,
+          initialY: player.stats_log[0].y,
+          playerType: index === 1 || index === 12 ? "goalie" : "player",
+          bodyAngle: player.stats_log[0].bodyAngle,
+          neckAngle: player.stats_log[0].neckAngle,
+          viewWidth: player.stats_log[0].viewWidth,
+          outlineColor: player.stats_log[0].isKicking === 1 ? "white" : "black",
+        });
       })}
     </>
   );
@@ -586,6 +615,7 @@ function DrawAllPlayers(props: {
 
 // DrawPlayer function definition
 function DrawPlayer(props: {
+  key: number;
   ref: any;
   radius: number;
   color: string;
@@ -595,31 +625,34 @@ function DrawPlayer(props: {
   bodyAngle: number;
   neckAngle: number;
   viewWidth: number;
+  outlineColor: string;
 }) {
-
   return (
-    <>
-      <Group 
+    <Group
+      key={props.key}
       ref={props.ref}
       x={props.initialX}
       y={props.initialY}
-      rotationDeg={props.bodyAngle}
-      >
-        <Circle
-          radius={props.radius}
-          fill={props.color}
-        />
-
-
-        <Wedge
+      rotation={props.bodyAngle}
+    >
+      <Circle
         radius={props.radius}
-        fill={"black"}
-        angle={180}
-        />
-      </Group>
+        fill={props.color}
+        strokeWidth={PLAYER_OUTLINE_WIDTH}
+        stroke={props.outlineColor}
+      />
 
+      <Wedge radius={props.radius} fill={"black"} angle={180} />
 
-    </>
+      <Wedge
+        radius={1}
+        angle={props.viewWidth}
+        rotation={props.neckAngle}
+        stroke={VIEW_AREA_INDICATOR_LINE_COLOR}
+        strokeWidth={VIEW_AREA_INDICATOR_LINE_WIDTH}
+        height={7}
+      />
+    </Group>
   );
 }
 

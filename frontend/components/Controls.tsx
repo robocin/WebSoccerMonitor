@@ -27,7 +27,7 @@ export default function Controls2D(props: {
           max={props.endGameFrame}
           step="1"
           value={props.currentFrame}
-          className="w-full text-center appearance-none bg-gray-500 h-8 rounded-full m-2 "
+          className="w-full text-center appearance-none bg-gray-400 h-8 rounded-full m-2 "
           onChange={(e) =>
             handleShowtimeSliderInput({
               value: parseInt(e.target.value),
@@ -36,7 +36,6 @@ export default function Controls2D(props: {
             })
           }
         ></input>
-
       </div>
 
       <div className="w-full flex justify-center z-20">
@@ -54,7 +53,6 @@ export default function Controls2D(props: {
           Center View
         </div>
       </div>
-
     </div>
   );
 }
