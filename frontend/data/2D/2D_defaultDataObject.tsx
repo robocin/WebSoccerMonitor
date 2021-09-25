@@ -1,7 +1,7 @@
 export const defaultDataObject = {
   valid: false,
   match: {
-    quantityOfFrames: 0,
+    quantity_of_frames: 0,
     game_state_log: ["No log file selected"],
     team_l_name: "Team Left",
     team_r_name: "Team Right",

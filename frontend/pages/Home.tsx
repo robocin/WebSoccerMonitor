@@ -175,13 +175,12 @@ export default function Home() {
         </div>
 
         {/* Monitor Area */}
-        <div className="mt-12 w-full flex justify-between px-6 h-[700px]">
+        <div className="my-12 w-full flex justify-between px-6 h-[700px]">
           <div
             style={{ width: normalMonitorWidth, height: normaMonitorHeight }}
           >
             <Monitor2D
-              maxNumberOfFrames={dataObject.match.quantityOfFrames}
-              // timeBetweenFrames={50}
+              maxNumberOfFrames={dataObject.match.quantity_of_frames}
               dataObject={dataObject}
               windowWidth={normalMonitorWidth + 5}
               windowHeight={normaMonitorHeight}

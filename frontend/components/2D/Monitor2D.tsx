@@ -39,12 +39,10 @@ const GOALIE_LEFT_COLOR = "lightGreen";
 const PLAYER_RIGHT_COLOR = "red";
 const GOALIE_RIGHT_COLOR = "#D358FF";
 const VIEW_AREA_INDICATOR_LINE_COLOR = "#80c8ff";
-const VIEW_AREA_INDICATOR_LINE_WIDTH = 0.1
-const PLAYER_OUTLINE_WIDTH = 0.1
-const PLAYER_OUTLINE_COLOR = "black"
-const PLAYER_OUTLINE_KICK_COLOR = "white"
-
-
+const VIEW_AREA_INDICATOR_LINE_WIDTH = 0.1;
+const PLAYER_OUTLINE_WIDTH = 0.1;
+const PLAYER_OUTLINE_COLOR = "black";
+const PLAYER_OUTLINE_KICK_COLOR = "white";
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
@@ -151,16 +149,18 @@ export default function Monitor2D(props: {
         }}
       />
 
-      {props.showControls && (
-        <Controls
-          endGameFrame={props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES}
-          currentFrame={currentFrame}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-          setCenterView={() => setCenterView(true)}
-          setCurrentFrame={setCurrentFrame}
-        />
-      )}
+      <div className="">
+        {props.showControls && (
+          <Controls
+            endGameFrame={props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES}
+            currentFrame={currentFrame}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            setCenterView={() => setCenterView(true)}
+            setCurrentFrame={setCurrentFrame}
+          />
+        )}
+      </div>
     </div>
   );
 }

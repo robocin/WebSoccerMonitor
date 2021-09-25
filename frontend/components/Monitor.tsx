@@ -129,7 +129,7 @@ export default function Monitor(props: {
         currentFrame: props.states.currentFrame,
         ballRef: props.config.ballRef,
         ballData: props.data.dataObject.ball,
-        options: props.config //TODO: there is some serious prop drilling going on with this options prop. TODO: remove the prop drilling somehow (probably, by using a context for the whole "Monitor.tsx" file)
+        options: props.config, //TODO: there is some serious prop drilling going on with this options prop. TODO: remove the prop drilling somehow (probably, by using a context for the whole "Monitor.tsx" file)
       });
     }
   }, [props.states.currentFrame]);
@@ -145,7 +145,7 @@ export default function Monitor(props: {
           ref={stageRef}
           style={{ backgroundColor: props.config.backgroundColor }}
           width={props.config.windowWidth ?? window.innerWidth}
-          height={props.config.windowHeight ?? window.innerHeight}
+          height={(props.config.windowHeight ?? window.innerHeight) - 28}
           draggable
           onWheel={props.config.lockCameraZoom ? null : handleWheel}
         >
@@ -201,7 +201,7 @@ function updateAllPlayers(props: {
 }) {
   props.playersDataArray.forEach((player, index) => {
     console.log();
-    
+
     UpdateEntity({
       type: "player",
       category: props.category,
@@ -247,7 +247,7 @@ function UpdateEntity(props: {
 
       // update the view area width
       props.shape.children[2].to({
-        height: props.options.showPlayerViewArea?7:0,
+        height: props.options.showPlayerViewArea ? 7 : 0,
         angle: props.viewWidth,
         rotation: props.neckAngle,
         duration: 0,
