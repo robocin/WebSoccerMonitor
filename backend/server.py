@@ -45,7 +45,7 @@ def convert_rcg_to_csv():
     final_json = {
         "match":{
             # "quantity_of_frames": time_range, // this should be the line. however, 
-            "quantity_of_frames": 5999,
+            "quantity_of_frames": time_range-1,
             "game_state_log": [],
             "team_l_name": str(df["team_name_l"][0]),
             "team_r_name": str(df["team_name_r"][0]),
