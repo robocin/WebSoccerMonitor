@@ -7,6 +7,7 @@ import Link from "next/link";
 import { AiFillFileAdd, AiOutlineLoading } from "react-icons/ai";
 
 const BACKEND_PORT = 5002;
+const DEFAULT_TIME_BETWEEN_FRAMES = 130;
 
 const Monitor2D = dynamic(() => import("../components/2D/Monitor2D"), {
   ssr: false,
@@ -75,6 +76,10 @@ export default function Home() {
     const normalMonitorCenterViewScale = 8;
 
     const [showPlayerViewArea, setShowPlayerViewArea] = useState(true);
+    const [timeBetweenFrames, setTimeBetweenFrames] = useState(
+      DEFAULT_TIME_BETWEEN_FRAMES
+    );
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
     const [dataObject, setDataObject] = useState(defaultDataObject);
 
@@ -181,6 +186,8 @@ export default function Home() {
           >
             <Monitor2D
               maxNumberOfFrames={dataObject.match.quantity_of_frames}
+              timeBetweenFrames={timeBetweenFrames}
+              playbackSpeed={playbackSpeed}
               dataObject={dataObject}
               windowWidth={normalMonitorWidth + 5}
               windowHeight={normaMonitorHeight}
@@ -192,15 +199,42 @@ export default function Home() {
             />
           </div>
 
-          <div className="w-full ml-4 flex flex-wrap justify-center">
+          <div className="w-full ml-4 flex flex-wrap justify-center items-start">
             <div className="w-11/12 h-2/6 bg-gray-300">
               <Dropzone setDataObject={setDataObject} />
             </div>
-            <div>
-              <div className="font-bold select-none">Options</div>
+            {/*TODO: Ideally, all options should be inside the controls file. TODO: refactor this. */}
+            <div className="flex relative flex-wrap justify-center items-start">
+              <div className="text-xl font-bold select-none w-full">
+                Options
+              </div>
               <div
-                className={` text-xl select-none`}
+                className={`select-none`}
                 onClick={() => setShowPlayerViewArea(!showPlayerViewArea)}
+                onMouseEnter={() => {
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.add("text-gray-400");
+
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.remove("text-transparent");
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.remove("hidden");
+                }}
+                onMouseLeave={() => {
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.add("hidden");
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.add("text-transparent");
+
+                  document
+                    .getElementById("known_bug_message")
+                    .classList.remove("text-gray-400");
+                }}
               >
                 Show PlayerViewArea{" "}
                 <span
@@ -211,9 +245,43 @@ export default function Home() {
                   {showPlayerViewArea ? "ON" : "OFF"}
                 </span>
               </div>
-              <div className="text-base text-gray-400 w-60">
-                Known bug: Options selection works only when game is being
-                played (not paused)
+
+              <div
+                id="known_bug_message"
+                className="-top-20 text-base text-transparent w-60 duration-150 hidden absolute"
+              >
+                Known bug: This option works only when game is being played (not
+                paused)
+              </div>
+
+              <div className="w-full my-2 select-none">
+                Playback Speed
+                {[0.5, 1, 2, 4].map((item, index) => {
+                  return (
+                    <span
+                      onClick={() => {
+                        setPlaybackSpeed(item);
+                        setTimeBetweenFrames(
+                          DEFAULT_TIME_BETWEEN_FRAMES / item
+                        );
+
+                        document.getElementById("play-stop-button").click();
+
+                        // TODO: this is a workaround to stop and the play the game. I'm clicking the button 'play/stop' by getting it's id, then clicking one time, waiting 10 ms and clicking one more time. TODO: refactor this. (a hint is that all controls should probably be inside the control.tsx file)
+                        setTimeout(function () {
+                          document.getElementById("play-stop-button").click();
+                        }, 10);
+                      }}
+                      className={`mx-2 px-2 font-bold border-black border-2 ${
+                        playbackSpeed === item
+                          ? "bg-gray-400"
+                          : "bg-transparent"
+                      } hover:bg-gray-400 duration-300 cursor-pointer`}
+                    >
+                      {item}x
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>

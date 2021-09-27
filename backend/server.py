@@ -69,8 +69,9 @@ def convert_rcg_to_csv():
             final_json["players"].append({ "id":i + (0 if side=="l" else 11), "side": side, "name": f"player_{side}{i+1}", "stats_log":[], "other_stats":[]}) 
 
             for time in range(0, time_range):
-                aux_kicking_count = 0
-                is_kicking_in_this_frame = int(df[f"player_{side}{i+1}_counting_kick"][time]) > aux_kicking_count
+                is_kicking_in_this_frame = False
+                if(time>0):
+                    is_kicking_in_this_frame = int(df[f"player_{side}{i+1}_counting_kick"][time]) > int(df[f"player_{side}{i+1}_counting_kick"][time-1])
                 final_json["players"][i + (0 if side=="l" else 11)]["stats_log"].append({
                     "x": float(df[f"player_{side}{i+1}_x"][time]), # x position of the palyer at the current time
                     "y": float(df[f"player_{side}{i+1}_y"][time]), # y position of the palyer at the current time
@@ -80,8 +81,6 @@ def convert_rcg_to_csv():
                     "countingKick": int(df[f"player_{side}{i+1}_counting_kick"][time]), # quantity of kicks of this player at the current time
                     "isKicking":1 if is_kicking_in_this_frame else 0 # quantity of kicks of this player at the current time
                     })
-                if is_kicking_in_this_frame:
-                    aux_kicking_count += 1 
 
 
 

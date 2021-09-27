@@ -57,11 +57,10 @@ export default function Monitor2D(props: {
   replayWhenReachesEnd?: boolean;
   timeBetweenFrames?: number;
   showPlayerViewArea?: boolean;
+  playbackSpeed?: number;
 }) {
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [currentTeamLeftScore, setCurrentTeamLeftScore] = useState(0);
-  const [currentTeamRightScore, setCurrentTeamRightScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(props.startPlaying);
   const [centerView, setCenterView] = useState(false);
 
@@ -142,6 +141,7 @@ export default function Monitor2D(props: {
           resetView: centerView,
           setResetView: setCenterView,
           timeBetweenFrames: props.timeBetweenFrames ?? TIME_BETWEEN_FRAMES,
+          playbackSpeed: props.playbackSpeed,
         }}
         data={{
           setTimeBetweenFrames: null,

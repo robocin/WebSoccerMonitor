@@ -1,5 +1,6 @@
 import React from "react";
 import centerView from "../functions/CenterView";
+import { GrBackTen, GrForwardTen } from "react-icons/gr";
 
 export default function Controls2D(props: {
   endGameFrame: number;
@@ -35,8 +36,27 @@ export default function Controls2D(props: {
         </div>
       </div>
 
-      <div className="w-full flex justify-center mt-8">
+      <div className="w-full flex justify-center items-center mt-8">
+        <GrBackTen
+          onClick={() =>
+            props.setCurrentFrame((oldFrame) =>
+              oldFrame > 10 ? oldFrame - 10 : 0
+            )
+          }
+          className="mx-2 text-3xl cursor-pointer"
+        />
+        <GrForwardTen
+          onClick={() =>
+            props.setCurrentFrame((oldFrame) =>
+              oldFrame < props.endGameFrame - 10
+                ? oldFrame + 10
+                : props.endGameFrame
+            )
+          }
+          className="mx-2 text-3xl cursor-pointer"
+        />
         <div
+          id="play-stop-button"
           className="bg-green-900 text-white px-1 flex justify-center items-center cursor-pointer mx-1 border-2 font-bold border-black"
           onClick={() => props.setIsPlaying(!props.isPlaying)}
         >

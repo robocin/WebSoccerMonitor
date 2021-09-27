@@ -54,6 +54,8 @@ export default function Monitor(props: {
     // TODO: implement a selector outside of monitor for those values with an "?" symbol
     // carries the number of miliseconds that must be elapsed between each frame. The smaller this number is, the faster is the match playback.
     timeBetweenFrames?: number;
+    //
+    playbackSpeed?: number;
   };
   data: {
     /**
@@ -74,6 +76,7 @@ export default function Monitor(props: {
 }) {
   // Refs (references to DOM nodes) //
   const stageRef = useRef(null);
+  const [timeoutValue, setTimeoutValue] = useState(1);
 
   /**
    * --- useEffects ---
@@ -107,8 +110,17 @@ export default function Monitor(props: {
     if (props.states.isPlaying === true) {
       const interval = setInterval(() => {
         props.states.setCurrentFrame((showtime) => showtime + 1);
-      }, props.states.timeBetweenFrames);
+      }, props.states.timeBetweenFrames / (props.states.playbackSpeed ?? 1));
       return () => clearInterval(interval);
+
+      // setTimeout(() => {
+      //   props.states.setCurrentFrame((showtime) => showtime + 1);
+      // }, props.states.timeBetweenFrames);
+
+      // props.states.setCurrentFrame((showtime) => showtime + 1);
+      // setTimeout(() => {
+      //   () => this.tick();
+      // }, 10000);
     }
   }, [props.states.isPlaying]);
 
