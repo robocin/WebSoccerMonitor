@@ -8,10 +8,13 @@ https://user-images.githubusercontent.com/43099047/134788890-56064e63-edbc-43fd-
     - on frontend/ run: npm install
     - --> to start, run: npm run dev
 
+- submodule setup
+    under the root folder, do:
+    - git submodule init
+    - git submodule update
+    
 - backend setup on ubuntu:
     - on backend/ run: pip3 install -r requirements.txt
     - on backend/rcss-log-extractor/ run: sudo apt-get install default-jre default-jdk
     - --> to start, run: python3 server.py
-
 # Contributing
-...
