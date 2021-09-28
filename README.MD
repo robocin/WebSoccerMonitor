@@ -1,13 +1,20 @@
+![image](https://user-images.githubusercontent.com/43099047/134787866-4d5a90b9-355d-41aa-83c3-af2c984e3867.png)
+
+https://user-images.githubusercontent.com/43099047/134788890-56064e63-edbc-43fd-a857-8f93096ea202.mp4
+
+# Setup Guide
+**You don't have to download or setup anything, just go to [WebsiteLink]. However, if you want to run everything locally, the steps are simple:**
 - frontend setup on ubuntu:
     - on frontend/ run: npm install
     - --> to start, run: npm run dev
-
-- backend setup on ubuntu:
-    - on backend/ run: pip3 install -r requirements.txt
-    - on backend/rcss-log-extractor/ run: sudo apt-get install default-jre default-jdk
-    - --> to start, run: python3 server.py
 
 - submodule setup
     under the root folder, do:
     - git submodule init
     - git submodule update
+    
+- backend setup on ubuntu:
+    - on backend/ run: pip3 install -r requirements.txt
+    - on backend/rcss-log-extractor/ run: sudo apt-get install default-jre default-jdk
+    - --> to start, run: python3 server.py
+# Contributing
