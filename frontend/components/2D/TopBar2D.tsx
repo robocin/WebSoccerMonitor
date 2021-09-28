@@ -9,8 +9,8 @@ export default function TopBar(props: {
 }) {
   return (
     <div
-      className="w-full flex text-lg select-none"
-      style={{ height: `${props.topBarHeight}px` }}
+      className={`w-full flex text-lg select-none text-xs tablet:text-base laptop-L:text-xl 4k:text-3xl h-[25px] 4k:h-[40px]`}
+      // style={{ height: `${props.topBarHeight}px` }}
     >
       <div className="h-full w-full bg-yellow-300 flex justify-center items-center">
         {props.team_l_name} {props.team_l_score_log[props.currentFrame]}

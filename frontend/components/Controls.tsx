@@ -36,7 +36,7 @@ export default function Controls2D(props: {
         </div>
       </div>
 
-      <div className="w-full flex justify-center items-center mt-4">
+      <div className="w-full flex justify-center items-center mt-4 text-sm tablet:text-xl laptop:text-3xl">
         <GrBackTen
           onClick={() =>
             props.setCurrentFrame((oldFrame) =>

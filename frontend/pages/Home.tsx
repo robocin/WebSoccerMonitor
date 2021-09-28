@@ -41,7 +41,7 @@ function Dropzone(props: { setDataObject: any }) {
   return (
     <div
       {...getRootProps()}
-      className="text-xl flex flex-col justify-center items-center h-full px-20 text-gray-700"
+      className="w-full h-full text-base tablet:text-xl 4k:text-4xl flex flex-col justify-center items-center p-4 tablet:px-20 text-gray-700 bg-gray-300"
     >
       <input {...getInputProps()} />
       {isProcessing ? (
@@ -56,6 +56,7 @@ function Dropzone(props: { setDataObject: any }) {
           ) : (
             <p>
               Drag and drop a *.rcg.gz log file here, or click to select one
+              locally
             </p>
           )}
 
@@ -83,16 +84,16 @@ export default function Home() {
     return (
       <div className="h-full w-full bg-gray-100 ">
         {/* Top bar */}
-        <div className="flex justify-between text-left p-4 text-4xl bg-white border-b-2 border-black mb-">
+        <div className="flex justify-between text-left p-4 text-base tablet:text-2xl 4k:text-6xl 4k:py-6 bg-white border-b-2 border-black w-full">
           <Link href="/">
             <div className="font-bold cursor-pointer">
               WebSoccerMonitor
-              <span className="text-gray-400 text-xl"> 0.1</span>
+              <span className="text-gray-400 tablet:text-xl"> 0.1</span>
             </div>
           </Link>
           <div className="flex">
             <Link href="https://github.com/robocin/SoccerWebMonitor">
-              <div className="text-gray-500 pr-12 hover:text-black cursor-pointer">
+              <div className="text-gray-500 px-3 tablet:pr-12 hover:text-black cursor-pointer">
                 Docs
               </div>
             </Link>
@@ -105,48 +106,13 @@ export default function Home() {
           </div>
         </div>
         {/* Welcome Banner */}
-        <div className="flex bg-green-600">
-          <div className="text-7xl text-left py-6 bg-green-90 w-7/12 flex justify-center">
-            <div className="bg-green-800 p-4 ">
-              <div className=" text-white">
-                Welcome to the{" "}
-                <span className="font-bold">WebSoccerMonitor</span> Envirnonment
-              </div>
-              <div className="shadow-2xl bg-white p-4 w-8/12 mt-6 text-xl text-left">
-                <span className="font-bold">
-                  This{" "}
-                  <Link href="https://github.com/robocin/SoccerWebMonitor">
-                    <span className="bg-yellow-200 underline cursor-pointer">
-                      Open Source project
-                    </span>
-                  </Link>{" "}
-                  aims to be a simple yet powerful way of visualising matches
-                  from RoboCup Soccer Leagues.{" "}
-                </span>
-                At the moment you can replay previous games by providing the log
-                file of a 2D Simulation league match. In the near future, you'll
-                be able to hook this envirnonment to a server running a game of
-                any league and watch it in real time.
-              </div>
-            </div>
-          </div>
 
-          <div className="w-5/12 p-4">
-            <Monitor2D
-              id={"Monitor2DInstance_1"}
-              centerViewScalePercentage={2.6}
-              dataObject={demoMatch}
-              maxNumberOfFrames={900}
-              showControls={false}
-              startPlaying={true}
-              lockCameraZoom={true}
-            />
-          </div>
-        </div>
-
+        {/* Tip Card */}
         <div className="w-full flex justify-center my-6 ">
-          <div className="bg-white shadow-2xl w-6/12 h-48 text-xl flex flex-wrap justify-center items-start border-2 border-gray-300">
-            <div className="text-gray-500 font-bold mt-4">Tip:</div>
+          <div className="bg-white shadow-2xl w-full mx-2 tablet:w-6/12 h-48 text-base laptop:text-xl 4k:text-3xl 4k:h-64 4k:px-12 px-4 flex flex-wrap justify-center items-start border-2 border-gray-300">
+            <div className="text-gray-500 font-bold mt-4 4k:text-4xl ">
+              Tip:
+            </div>
             <div>
               By default, no log file is selected. If you don't have any 2D
               league log file in the "*.rcg.gz" format in your computer, you can
@@ -171,9 +137,10 @@ export default function Home() {
             </div>
           </div>
         </div>
+
         {/* Monitor Area */}
-        <div className="my-12 w-full flex justify-between px-6 h-[700px]">
-          <div className="w-full mb-12">
+        <div className=" my-12 flex flex-wrap laptop:flex-nowrap justify-center px-6 h-[700px]">
+          <div className="w-full mb-32 laptop-L:mb-12 h-72 mobile-M:h-86 tablet:h-5/6 4k:h-[1000px]">
             <Monitor2D
               id={"Monitor2DInstance_2"}
               maxNumberOfFrames={dataObject.match.quantity_of_frames}
@@ -182,146 +149,127 @@ export default function Home() {
               dataObject={dataObject}
               showControls={true}
               startPlaying={true}
-              lockCameraZoom={false}
+              lockCameraZoom={true}
               showPlayerViewArea={showPlayerViewArea}
               playerViewAreaSize={playerViewAreaSize}
             />
           </div>
 
-          <div className="w-5/12 ml-4 flex flex-wrap justify-center items-start">
-            <div className="w-11/12 h-2/6 bg-gray-300">
+          <div className="w-5/12 4k:w-6/12">
+            <div className="hidden laptop:block w-full px-4 h-72 mb-4">
               <Dropzone setDataObject={setDataObject} />
             </div>
-            {/*TODO: Ideally, all options should be inside the controls file. TODO: refactor this. */}
-            <div className="flex relative flex-wrap justify-center items-start">
-              <div className="text-xl font-bold select-none w-full">
-                Options
-              </div>
-              <div
-                className={`select-none`}
-                onClick={() => setShowPlayerViewArea(!showPlayerViewArea)}
-                onMouseEnter={() => {
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.add("text-gray-400");
 
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.remove("text-transparent");
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.remove("hidden");
-                }}
-                onMouseLeave={() => {
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.add("hidden");
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.add("text-transparent");
+            <div className="w-full px-4 mb-12 flex flex-wrap justify-center items-start">
+              {/*TODO: Ideally, all options should be inside the controls file. TODO: it is probably a good idea to refactor this. */}
+              <div className="flex text-base tablet:text-xl 4k:text-4xl relative flex-wrap justify-center items-start">
+                <div className="font-bold select-none w-full">Options</div>
+                <div
+                  className={`select-none`}
+                  onClick={() => setShowPlayerViewArea(!showPlayerViewArea)}
+                  onMouseEnter={() => {
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.add("text-gray-400");
 
-                  document
-                    .getElementById("known_bug_message")
-                    .classList.remove("text-gray-400");
-                }}
-              >
-                Show PlayerViewArea{" "}
-                <span
-                  className={`font-bold cursor-pointer ${
-                    showPlayerViewArea ? "text-green-600" : "text-red-900"
-                  }`}
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.remove("text-transparent");
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.remove("hidden");
+                  }}
+                  onMouseLeave={() => {
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.add("hidden");
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.add("text-transparent");
+
+                    document
+                      .getElementById("known_bug_message")
+                      .classList.remove("text-gray-400");
+                  }}
                 >
-                  {showPlayerViewArea ? "ON" : "OFF"}
-                </span>
-              </div>
+                  Show PlayerViewArea{" "}
+                  <span
+                    className={`font-bold cursor-pointer ${
+                      showPlayerViewArea ? "text-green-600" : "text-red-900"
+                    }`}
+                  >
+                    {showPlayerViewArea ? "ON" : "OFF"}
+                  </span>
+                </div>
 
-              <div
-                id="known_bug_message"
-                className="-top-20 text-base text-transparent w-60 duration-150 hidden absolute"
-              >
-                Known bug: This option works only when game is being played (not
-                paused)
-              </div>
+                <div
+                  id="known_bug_message"
+                  className="-top-20 text-base text-transparent w-60 duration-150 hidden absolute"
+                >
+                  Known bug: This option works only when game is being played
+                  (not paused)
+                </div>
 
-              {/* TODO: the following two blocks of code below are very similar, because they share the same structure. It should be a separete component that is just imported here passing arguments. TODO: do this */}
-              {showPlayerViewArea && (
+                {/* TODO: the following two blocks of code below are very similar, because they share the same structure. It should be a separete component that is just imported here passing arguments. TODO: do this */}
+                {showPlayerViewArea && (
+                  <div className="w-full my-2 select-none">
+                    PlayerViewArea Size
+                    {[2, 3, 4, 5, 7].map((item, index) => {
+                      return (
+                        <span
+                          key={index}
+                          onClick={() => {
+                            setPlayerViewAreaSize(item);
+                          }}
+                          className={`mx-2 px-2 font-bold border-black border-2 ${
+                            playerViewAreaSize === item
+                              ? "bg-gray-400"
+                              : "bg-transparent"
+                          } hover:bg-gray-400 duration-300 cursor-pointer`}
+                        >
+                          {item}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
                 <div className="w-full my-2 select-none">
-                  PlayerViewArea Size
-                  {[2, 3, 4, 5, 7].map((item, index) => {
+                  Playback Speed
+                  {[0.5, 1, 2, 4].map((item, index) => {
                     return (
                       <span
+                        key={index}
                         onClick={() => {
-                          setPlayerViewAreaSize(item);
+                          setPlaybackSpeed(item);
+                          setTimeBetweenFrames(
+                            DEFAULT_TIME_BETWEEN_FRAMES / item
+                          );
+
+                          document.getElementById("play-stop-button").click();
+
+                          // TODO: this is a workaround to stop and the play the game. I'm clicking the button 'play/stop' by getting it's id, then clicking one time, waiting 10 ms and clicking one more time. TODO: refactor this. (a hint is that all controls should probably be inside the control.tsx file)
+                          setTimeout(function () {
+                            document.getElementById("play-stop-button").click();
+                          }, 10);
                         }}
                         className={`mx-2 px-2 font-bold border-black border-2 ${
-                          playerViewAreaSize === item
+                          playbackSpeed === item
                             ? "bg-gray-400"
                             : "bg-transparent"
                         } hover:bg-gray-400 duration-300 cursor-pointer`}
                       >
-                        {item}
+                        {item}x
                       </span>
                     );
                   })}
                 </div>
-              )}
-
-              <div className="w-full my-2 select-none">
-                Playback Speed
-                {[0.5, 1, 2, 4].map((item, index) => {
-                  return (
-                    <span
-                      onClick={() => {
-                        setPlaybackSpeed(item);
-                        setTimeBetweenFrames(
-                          DEFAULT_TIME_BETWEEN_FRAMES / item
-                        );
-
-                        document.getElementById("play-stop-button").click();
-
-                        // TODO: this is a workaround to stop and the play the game. I'm clicking the button 'play/stop' by getting it's id, then clicking one time, waiting 10 ms and clicking one more time. TODO: refactor this. (a hint is that all controls should probably be inside the control.tsx file)
-                        setTimeout(function () {
-                          document.getElementById("play-stop-button").click();
-                        }, 10);
-                      }}
-                      className={`mx-2 px-2 font-bold border-black border-2 ${
-                        playbackSpeed === item
-                          ? "bg-gray-400"
-                          : "bg-transparent"
-                      } hover:bg-gray-400 duration-300 cursor-pointer`}
-                    >
-                      {item}x
-                    </span>
-                  );
-                })}
               </div>
             </div>
           </div>
-        </div>
-        <div className="w-full flex justify-center items-center h-full bg-green-900">
-          <div className="m-4 w-6/12 h-[500px] border-2 border-black bg-white shadow-2xl flex flex-col p-12">
-            <div className="flex justify-center items-center text-4xl font-bold mb-12">
-              Made by{" "}
-              <Link href="https://robocin.com.br">
-                <img
-                  className="w-24 inline-block cursor-pointer"
-                  src="https://avatars.githubusercontent.com/u/29430108?s=280&v=4"
-                />
-              </Link>
-              , inspired by{" "}
-              <Link href="https://robocup.org">
-                <img
-                  className="w-48 inline-block cursor-pointer"
-                  src="https://www.robocup.org/assets/admin/event-missing-196de6f5a822875bcb7dae3a5facd9ad34dc45c123ba218aabd2bef2e2e9634f.jpg"
-                />
-              </Link>
-            </div>
 
-            <div className="my-12  text-gray-600 text-2xl">Contributors:</div>
-            <div className="h-full text-gray-600 text-xl flex justify-center items-center">
-              Contribute to the project on GitHub and earn a place here for the
-              logo of your team!
-            </div>
+          <div className=" laptop:hidden">
+            <Dropzone setDataObject={setDataObject} />
           </div>
         </div>
       </div>
