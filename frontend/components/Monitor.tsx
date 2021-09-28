@@ -14,11 +14,14 @@ export default function Monitor(props: {
   config: {
     // category (if it is 2D, SSSL, VSS) //TODO: this is probrably not good. This file should be completely agnostic from categories, but at the moment I'm not sure how to do it in a more agnostic way. If possible, fix this.
     category: string;
-    // height and width
-    windowHeight: number;
-    windowWidth: number;
+    // parent div to set Monitor's height and width to the same as theirs (the div parent)
+    parentDivId: any;
+    // height of the topbar
+    topbarHeight: number;
     // if true, draws show player view area.
     showPlayerViewArea;
+    // size of the wedge that represents the player view area
+    playerViewAreaSize: number;
     // color of the background everywhere
     backgroundColor: string;
     // total number of players (sum of both teams)
@@ -34,7 +37,7 @@ export default function Monitor(props: {
     // if true, sets currentFrame to 0 when the end of the game is reached (causes the monitor to replay tha match).
     replayWhenReachesEnd;
     // (React Konva) default scale value of the Monitor's Stage
-    defaultScaleValue: number;
+    defaultScalePercentage: number;
     // (React Konva) function to draw the background layer
     DrawBackgroundFunction: Function;
     // (React Konva) function to draw all entities (players and ball)
@@ -77,6 +80,25 @@ export default function Monitor(props: {
   // Refs (references to DOM nodes) //
   const stageRef = useRef(null);
   const [timeoutValue, setTimeoutValue] = useState(1);
+  const [size, setSize] = useState({
+    width:
+      document.getElementById(props.config.parentDivId) === null
+        ? 1
+        : document.getElementById(props.config.parentDivId).offsetWidth,
+    height:
+      document.getElementById(props.config.parentDivId) === null
+        ? 1
+        : document.getElementById(props.config.parentDivId).offsetHeight -
+          props.config.topbarHeight,
+  });
+
+  const [defaultScaleValue, setDefaultScaleValue] = useState(
+    // (props.config.defaultScalePercentage * window.innerWidth) / 300
+
+    (props.config.defaultScalePercentage * size.width) / 300
+  );
+
+  // const [defaultOffset, setDefaultOffset] = useState({ x: 0, y: 0 });
 
   /**
    * --- useEffects ---
@@ -88,7 +110,7 @@ export default function Monitor(props: {
     if (stageRef !== null) {
       centerView({
         stageRef: stageRef,
-        defaultScaleValue: props.config.defaultScaleValue,
+        defaultScaleValue: defaultScaleValue,
       });
     }
   }, [stageRef]);
@@ -98,8 +120,7 @@ export default function Monitor(props: {
     if (props.states.resetView === true) {
       centerView({
         stageRef: stageRef,
-        defaultScaleValue:
-          props.config.defaultScaleValue ?? props.config.defaultScaleValue,
+        defaultScaleValue: defaultScaleValue,
       });
       props.states.setResetView(false);
     }
@@ -112,15 +133,6 @@ export default function Monitor(props: {
         props.states.setCurrentFrame((showtime) => showtime + 1);
       }, props.states.timeBetweenFrames / (props.states.playbackSpeed ?? 1));
       return () => clearInterval(interval);
-
-      // setTimeout(() => {
-      //   props.states.setCurrentFrame((showtime) => showtime + 1);
-      // }, props.states.timeBetweenFrames);
-
-      // props.states.setCurrentFrame((showtime) => showtime + 1);
-      // setTimeout(() => {
-      //   () => this.tick();
-      // }, 10000);
     }
   }, [props.states.isPlaying]);
 
@@ -146,19 +158,50 @@ export default function Monitor(props: {
     }
   }, [props.states.currentFrame]);
 
+  useEffect(() => {
+    const checkSize = () => {
+      setDefaultScaleValue(
+        (props.config.defaultScalePercentage * size.width) / 300
+      );
+      // setDefaultOffset({ x: 0, y: 0 });
+      setSize({
+        width:
+          document.getElementById(props.config.parentDivId) === null
+            ? 1
+            : document.getElementById(props.config.parentDivId).offsetWidth,
+        height:
+          document.getElementById(props.config.parentDivId) === null
+            ? 1
+            : document.getElementById(props.config.parentDivId).offsetHeight -
+              props.config.topbarHeight,
+      });
+    };
+
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
+
   return (
     <div>
       {/* Top Bar  */}
       {/* {TopBar({ showtime: props.states.showtime })} */}
 
       {/* Konva stage */}
-      <div className="w-full relative select-none">
+      <div className="relative select-none">
         <Stage
           ref={stageRef}
-          style={{ backgroundColor: props.config.backgroundColor }}
-          width={props.config.windowWidth ?? window.innerWidth}
-          height={(props.config.windowHeight ?? window.innerHeight) - 28}
+          style={{
+            backgroundColor: props.config.backgroundColor,
+            width: `${size.width}px`,
+            height: `${size.height}px`,
+          }}
+          width={size.width}
+          height={size.height}
+          scaleX={defaultScaleValue}
+          scaleY={defaultScaleValue}
           draggable
+          // offsetX={defaultOffset.x}
+          // offsetY={defaultOffset.y}
           onWheel={props.config.lockCameraZoom ? null : handleWheel}
         >
           {/* background layer */}
@@ -259,7 +302,9 @@ function UpdateEntity(props: {
 
       // update the view area width
       props.shape.children[2].to({
-        height: props.options.showPlayerViewArea ? 7 : 0,
+        height: props.options.showPlayerViewArea
+          ? props.options.playerViewAreaSize
+          : 0,
         angle: props.viewWidth,
         rotation: props.neckAngle,
         duration: 0,

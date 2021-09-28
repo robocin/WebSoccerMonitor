@@ -68,23 +68,20 @@ function Dropzone(props: { setDataObject: any }) {
 
 export default function Home() {
   if (typeof window !== "undefined") {
-    const smallMonitorWidth = 700;
-    const smallMonitorHeight = 500;
-    const smallMonitorCenterViewScale = 6.2;
     const normalMonitorWidth = 1000;
     const normaMonitorHeight = 600;
-    const normalMonitorCenterViewScale = 8;
 
     const [showPlayerViewArea, setShowPlayerViewArea] = useState(true);
     const [timeBetweenFrames, setTimeBetweenFrames] = useState(
       DEFAULT_TIME_BETWEEN_FRAMES
     );
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    const [playerViewAreaSize, setPlayerViewAreaSize] = useState(5); //TODO: we should get the default value for this useState from the 2DMonitor file (from the const), and not set it with a "magic number" here. TODO: fix this
 
     const [dataObject, setDataObject] = useState(defaultDataObject);
 
     return (
-      <div className="h-full bg-gray-100 ">
+      <div className="h-full w-full bg-gray-100 ">
         {/* Top bar */}
         <div className="flex justify-between text-left p-4 text-4xl bg-white border-b-2 border-black mb-">
           <Link href="/">
@@ -107,7 +104,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
         {/* Welcome Banner */}
         <div className="flex bg-green-600">
           <div className="text-7xl text-left py-6 bg-green-90 w-7/12 flex justify-center">
@@ -135,26 +131,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="px-4 flex items-center">
-            <div className="p-[15px] pb-[45px] flex justify-center items-center">
-              <div
-                className="w-full"
-                style={{ width: smallMonitorWidth, height: smallMonitorHeight }}
-              >
-                <Monitor2D
-                  dataObject={demoMatch}
-                  maxNumberOfFrames={900}
-                  windowWidth={smallMonitorWidth + 5}
-                  windowHeight={smallMonitorHeight}
-                  showControls={false}
-                  startPlaying={true}
-                  centerViewScale={smallMonitorCenterViewScale}
-                  lockCameraZoom={true}
-                  replayWhenReachesEnd={true}
-                  showPlayerViewArea={showPlayerViewArea}
-                />
-              </div>
-            </div>
+          <div className="w-5/12 p-4">
+            <Monitor2D
+              id={"Monitor2DInstance_1"}
+              centerViewScalePercentage={2.6}
+              dataObject={demoMatch}
+              maxNumberOfFrames={900}
+              showControls={false}
+              startPlaying={true}
+              lockCameraZoom={true}
+            />
           </div>
         </div>
 
@@ -164,42 +150,45 @@ export default function Home() {
             <div>
               By default, no log file is selected. If you don't have any 2D
               league log file in the "*.rcg.gz" format in your computer, you can
-              download one from
+              download one from{" "}
               <Link
                 href={"https://archive.robocup.info/Soccer/Simulation/2D/logs/"}
               >
-                <div>
+                <span>
                   <span className="underline cursor-pointer">
                     the RoboCup Archive
                   </span>{" "}
-                  .
-                </div>
+                </span>
               </Link>
+              , or{" "}
+              <span
+                onClick={() => setDataObject(demoMatch)}
+                className="underline cursor-pointer bg-yellow-200"
+              >
+                click here
+              </span>{" "}
+              to use a demo log file.
             </div>
           </div>
         </div>
-
         {/* Monitor Area */}
         <div className="my-12 w-full flex justify-between px-6 h-[700px]">
-          <div
-            style={{ width: normalMonitorWidth, height: normaMonitorHeight }}
-          >
+          <div className="w-full mb-12">
             <Monitor2D
+              id={"Monitor2DInstance_2"}
               maxNumberOfFrames={dataObject.match.quantity_of_frames}
               timeBetweenFrames={timeBetweenFrames}
               playbackSpeed={playbackSpeed}
               dataObject={dataObject}
-              windowWidth={normalMonitorWidth + 5}
-              windowHeight={normaMonitorHeight}
               showControls={true}
               startPlaying={true}
-              centerViewScale={normalMonitorCenterViewScale}
               lockCameraZoom={false}
               showPlayerViewArea={showPlayerViewArea}
+              playerViewAreaSize={playerViewAreaSize}
             />
           </div>
 
-          <div className="w-full ml-4 flex flex-wrap justify-center items-start">
+          <div className="w-5/12 ml-4 flex flex-wrap justify-center items-start">
             <div className="w-11/12 h-2/6 bg-gray-300">
               <Dropzone setDataObject={setDataObject} />
             </div>
@@ -253,6 +242,29 @@ export default function Home() {
                 Known bug: This option works only when game is being played (not
                 paused)
               </div>
+
+              {/* TODO: the following two blocks of code below are very similar, because they share the same structure. It should be a separete component that is just imported here passing arguments. TODO: do this */}
+              {showPlayerViewArea && (
+                <div className="w-full my-2 select-none">
+                  PlayerViewArea Size
+                  {[2, 3, 4, 5, 7].map((item, index) => {
+                    return (
+                      <span
+                        onClick={() => {
+                          setPlayerViewAreaSize(item);
+                        }}
+                        className={`mx-2 px-2 font-bold border-black border-2 ${
+                          playerViewAreaSize === item
+                            ? "bg-gray-400"
+                            : "bg-transparent"
+                        } hover:bg-gray-400 duration-300 cursor-pointer`}
+                      >
+                        {item}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="w-full my-2 select-none">
                 Playback Speed
