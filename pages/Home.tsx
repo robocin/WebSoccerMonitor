@@ -6,7 +6,8 @@ import { default as demoMatch } from "../data/2D/2D_demoMatch.json";
 import Link from "next/link";
 import { AiFillFileAdd, AiOutlineLoading } from "react-icons/ai";
 
-const BACKEND_URL = `http://localhost:5002`;
+// const BACKEND_URL = `http://localhost:5002`;
+const BACKEND_URL = `http://2549-186-226-191-138.ngrok.io`;
 const DEFAULT_TIME_BETWEEN_FRAMES = 130; //TODO: refactor/ this const value should be in Monitor2D
 
 const Monitor2D = dynamic(() => import("../components/2D/Monitor2D"), {
