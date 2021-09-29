@@ -118,7 +118,7 @@ function MonitorArea() {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [playerViewAreaSize, setPlayerViewAreaSize] = useState(5); //TODO: we should get the default value for this useState from the 2DMonitor file (from the const), and not set it with a "magic number" here. TODO: fix this
 
-  const [dataObject, setDataObject] = useState(defaultDataObject);
+  const [dataObject, setDataObject] = useState<any>(defaultDataObject);
 
   return (
     // Tip
