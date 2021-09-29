@@ -174,7 +174,7 @@ function MonitorArea() {
             <Dropzone setDataObject={setDataObject} />
           </div>
 
-          <div className="w-full mb-8 flex flex-wrap justify-center items-start">
+          <div className="w-full mb-8 laptop:mt-24 4k:mt-52 flex flex-wrap justify-center items-start">
             {/*TODO: Ideally, all options should be inside the controls file. TODO: it is probably a good idea to refactor this. */}
             <div className="flex text-base tablet:text-xl 4k:text-4xl relative flex-wrap justify-center items-start">
               <div className="font-bold select-none w-full">Options</div>
@@ -218,7 +218,7 @@ function MonitorArea() {
 
               <div
                 id="known_bug_message"
-                className="-top-20 text-base text-transparent w-60 duration-150 hidden absolute"
+                className="-top-20 4k:-top-44 text-base 4k:text-2xl text-transparent w-60 duration-150 hidden absolute"
               >
                 Known bug: This option works only when game is being played (not
                 paused)
@@ -385,12 +385,12 @@ function WorkAroundResponsivityProblem() {
         <Footer />
       </div>
       <div className="hidden tablet:block laptop:hidden ">
-        <div>açsldkfjçasldkj</div>
-        <div>açsldkfjçasldkj</div>
-        <div>açsldkfjçasldkj</div>
-        <div>açsldkfjçasldkj</div>
-        <div>açsldkfjçasldkj</div>
-        <div>açsldkfjçasldkj</div>
+        <div>...</div>
+        <div>...</div>
+        <div>...</div>
+        <div>...</div>
+        <div>...</div>
+        <div>...</div>
       </div>
     </div>
   );

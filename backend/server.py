@@ -5,6 +5,7 @@ from flask.json import jsonify
 import pandas as pd
 import json
 from flask_cors import CORS, cross_origin
+import subprocess
 
 TMP_DF = "./log.rcg"
 QUANTITY_OF_PLAYERS_PER_TEAM = 11
@@ -29,9 +30,10 @@ def convert_rcg_to_csv():
         # save to the filesystem and RENAME (Not extract it) to just *.rcg
         file.save("./log.rcg.gz")
 
-
     # unzip and run the log extractor on the folder where the *.rcg file is and put the result on the results folder (/log_csv)
-    os.system("gzip -d log.rcg.gz ")
+    result = subprocess.run(['gzip', '-d', 'log.rcg.gz'], stdout=subprocess.PIPE)
+    if result.returncode == 1: # if file is not in gzip format it means it was already extracted, so, rename it
+        os.system("mv log.rcg.gz log.rcg")
     os.system("./rcss-log-extractor/bin/rcssLogExtractor --in . --out .")
 
     # open the .csv file and delete the .rcg one
