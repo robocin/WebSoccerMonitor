@@ -13,7 +13,7 @@ export default function Controls2D(props: {
   return (
     <div className="select-none">
       <div className="">
-        <div className="flex justify-center items-center h-12 4k:text-5xl">
+        <div className="flex justify-center items-center">
           <div className="">0</div>
           <input
             id="showtimeSlider"
@@ -36,14 +36,14 @@ export default function Controls2D(props: {
         </div>
       </div>
 
-      <div className="w-full flex justify-center items-center mt-4 text-sm tablet:text-xl laptop:text-3xl 4k:text-5xl">
+      <div className="w-full flex justify-center items-center mt-8">
         <GrBackTen
           onClick={() =>
             props.setCurrentFrame((oldFrame) =>
               oldFrame > 10 ? oldFrame - 10 : 0
             )
           }
-          className="mx-2 text-3xl cursor-pointer 4k:text-5xl"
+          className="mx-2 text-3xl cursor-pointer"
         />
         <GrForwardTen
           onClick={() =>
@@ -53,7 +53,7 @@ export default function Controls2D(props: {
                 : props.endGameFrame
             )
           }
-          className="mx-2 text-3xl cursor-pointer 4k:text-5xl"
+          className="mx-2 text-3xl cursor-pointer"
         />
         <div
           id="play-stop-button"

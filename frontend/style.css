@@ -7,15 +7,3 @@
   position: relative;
   bottom: -12px;
 }
-
-@media only screen and (min-width: 2500px) {
-  ::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 48px;
-    height: 48px;
-    background-color: black;
-    clip-path: polygon(0 50%, 50% 0, 100% 50%, 100% 100%, 0% 100%);
-    position: relative;
-    bottom: -23px;
-  }
-}
