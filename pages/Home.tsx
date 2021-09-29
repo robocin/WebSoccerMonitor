@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import dynamic from "next/dynamic";
-import { defaultDataObject } from "../data/2D/2D_defaultDataObject";
 import { default as demoMatch } from "../data/2D/2D_demoMatch.json";
+import { default as defaultDataObject } from "../data/2D/2D_defaultDataObject.json";
 import Link from "next/link";
 import { AiFillFileAdd, AiOutlineLoading } from "react-icons/ai";
 
@@ -304,7 +304,7 @@ function Dropzone(props: { setDataObject: any }) {
       });
       const jsonResponse = await response.json();
       props.setDataObject(jsonResponse);
-      console.log(jsonResponse)
+      console.log(jsonResponse);
       setIsProcessing(false);
     }
     setIsProcessing(true);
