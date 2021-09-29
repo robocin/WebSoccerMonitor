@@ -11,7 +11,7 @@ const Monitor = dynamic(() => import("../Monitor"), {
 
 // constantes
 const CENTER_VIEW_SCALE = 7;
-const CENTER_VIEW_SCALE_PERCENTAGE = 2.3;
+const CENTER_VIEW_SCALE_PERCENTAGE = 2;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
