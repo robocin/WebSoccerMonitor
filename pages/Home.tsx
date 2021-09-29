@@ -6,8 +6,8 @@ import { default as defaultDataObject } from "../data/2D/2D_defaultDataObject.js
 import Link from "next/link";
 import { AiFillFileAdd, AiOutlineLoading } from "react-icons/ai";
 
-// const BACKEND_URL = `http://localhost:5002`;
-const BACKEND_URL = `http://2549-186-226-191-138.ngrok.io`;
+const BACKEND_URL = `http://localhost:5002`;
+// const BACKEND_URL = `http://2549-186-226-191-138.ngrok.io`;
 const DEFAULT_TIME_BETWEEN_FRAMES = 130; //TODO: refactor/ this const value should be in Monitor2D
 
 const Monitor2D = dynamic(() => import("../components/2D/Monitor2D"), {
@@ -118,7 +118,7 @@ function MonitorArea() {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [playerViewAreaSize, setPlayerViewAreaSize] = useState(5); //TODO: we should get the default value for this useState from the 2DMonitor file (from the const), and not set it with a "magic number" here. TODO: fix this
 
-  const [dataObject, setDataObject] = useState<any>(defaultDataObject);
+  const [dataObject, setDataObject] = useState(defaultDataObject);
 
   return (
     // Tip
@@ -367,12 +367,22 @@ function Footer() {
           </div>
         </div>
 
+        <div className="text-gray-900 text-2xl 4k:text-5xl">
+          Author:{" "}
+          <Link href="https://mateusfbsoares.com">
+            <span className="text-xl cursor-pointer underline">
+              {" "}
+              Mateus Soares
+            </span>
+          </Link>
+        </div>
+
         <div className="my-12  text-gray-600 text-2xl 4k:text-5xl">
           Contributors:
-        </div>
-        <div className="h-full text-gray-600 text-xl 4k:text-4xl flex justify-center items-center">
-          Contribute to the project on GitHub and earn a place here for the logo
-          of your team!
+          <div className="h-full text-gray-600 text-xl 4k:text-4xl flex justify-center items-center">
+            Contribute to the project on GitHub and earn a place here for your
+            name and the logo of your team!
+          </div>
         </div>
       </div>
     </div>
