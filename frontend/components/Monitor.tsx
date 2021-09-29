@@ -255,8 +255,6 @@ function updateAllPlayers(props: {
   options;
 }) {
   props.playersDataArray.forEach((player, index) => {
-    console.log();
-
     UpdateEntity({
       type: "player",
       category: props.category,

@@ -11,7 +11,7 @@ const Monitor = dynamic(() => import("../Monitor"), {
 
 // constantes
 const CENTER_VIEW_SCALE = 7;
-const CENTER_VIEW_SCALE_PERCENTAGE = 2.3;
+const CENTER_VIEW_SCALE_PERCENTAGE = 2;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
@@ -94,11 +94,6 @@ export default function Monitor2D(props: {
         team_r_score_log={props.dataObject.match.team_r_score}
         game_state_log={props.dataObject.match.game_state_log}
       />
-      {console.log(
-        document.getElementById(props.id) === null
-          ? 1
-          : document.getElementById(props.id).offsetHeight
-      )}
       <Monitor
         config={{
           category: "2D",
