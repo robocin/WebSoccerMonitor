@@ -3,7 +3,7 @@ import Home from "./Home";
 
 export default function index() {
   return (
-    <div className="h-screen overflow-y-scroll scrollbar-hide">
+    <div className="h-screen overflow-y-scroll">
       {/* Head */}
       <Head>
         <title>Soccer Web Monitor</title>

@@ -11,6 +11,7 @@ const Monitor = dynamic(() => import("../Monitor"), {
 
 // constantes
 const CENTER_VIEW_SCALE = 7;
+const CENTER_VIEW_SCALE_PERCENTAGE = 2;
 const BALL_COLOR = "white";
 const BALL_RADIUS = 0.4;
 const TOTAL_NUMBER_OF_PLAYERS = 22;
@@ -43,22 +44,30 @@ const VIEW_AREA_INDICATOR_LINE_WIDTH = 0.1;
 const PLAYER_OUTLINE_WIDTH = 0.1;
 const PLAYER_OUTLINE_COLOR = "black";
 const PLAYER_OUTLINE_KICK_COLOR = "white";
+const DEFAULT_PLAYER_VIEW_AREA_SIZE = 5;
 
 // Monitor2D function definition
 export default function Monitor2D(props: {
+  id: any;
   dataObject?: any;
-  windowHeight?: number;
-  windowWidth?: number;
+  windowWidthPercentage?: number;
+  windowHeightPercentage?: number;
   showControls: boolean;
   startPlaying: boolean;
-  centerViewScale?: number;
+  centerViewScalePercentage?: number;
   lockCameraZoom: boolean;
   maxNumberOfFrames?: number;
   replayWhenReachesEnd?: boolean;
   timeBetweenFrames?: number;
   showPlayerViewArea?: boolean;
   playbackSpeed?: number;
+  playerViewAreaSize?: number;
 }) {
+  // config //
+  const topBarHeight = 25;
+  // const windowWidth = 700;
+  // const windowHeight = 400;
+
   // states //
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(props.startPlaying);
@@ -75,8 +84,9 @@ export default function Monitor2D(props: {
    * Monitor2D returns a Monitor component parameterized with 2D specificities (background, player and ball drawing functions, etc)
    */
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-wrap h-full w-full" id={props.id}>
       <TopBar
+        topBarHeight={topBarHeight}
         currentFrame={currentFrame}
         team_l_name={props.dataObject.match.team_l_name}
         team_r_name={props.dataObject.match.team_r_name}
@@ -84,12 +94,11 @@ export default function Monitor2D(props: {
         team_r_score_log={props.dataObject.match.team_r_score}
         game_state_log={props.dataObject.match.game_state_log}
       />
-
       <Monitor
         config={{
           category: "2D",
-          windowHeight: props.windowHeight,
-          windowWidth: props.windowWidth,
+          parentDivId: props.id,
+          topbarHeight: topBarHeight,
           DrawBackgroundFunction: () =>
             DrawBackground({
               lineColor: PITCH_LINES_COLOR,
@@ -126,12 +135,15 @@ export default function Monitor2D(props: {
             }),
           ballRef: ballRef,
           backgroundColor: PITCH_COLOR,
-          defaultScaleValue: props.centerViewScale ?? CENTER_VIEW_SCALE,
+          defaultScalePercentage:
+            props.centerViewScalePercentage ?? CENTER_VIEW_SCALE_PERCENTAGE,
           maxNumberOfFrames: props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES, // - 1 because the zero counts
           totalNumberOfPlayers: TOTAL_NUMBER_OF_PLAYERS,
           lockCameraZoom: props.lockCameraZoom,
           replayWhenReachesEnd: props.replayWhenReachesEnd ?? false,
           showPlayerViewArea: props.showPlayerViewArea ?? true,
+          playerViewAreaSize:
+            props.playerViewAreaSize ?? DEFAULT_PLAYER_VIEW_AREA_SIZE,
         }}
         states={{
           currentFrame: currentFrame,
@@ -148,8 +160,7 @@ export default function Monitor2D(props: {
           dataObject: props.dataObject,
         }}
       />
-
-      <div className="">
+      <div className="w-full">
         {props.showControls && (
           <Controls
             endGameFrame={props.maxNumberOfFrames ?? MAX_NUMBER_OF_FRAMES}
