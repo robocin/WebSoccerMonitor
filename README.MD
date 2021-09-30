@@ -3,7 +3,7 @@
 https://user-images.githubusercontent.com/43099047/134788890-56064e63-edbc-43fd-a857-8f93096ea202.mp4
 
 # Setup Guide
-**You don't have to download or setup anything, just go to [WebsiteLink]. However, if you want to run everything locally, the steps are simple:**
+**You don't have to download or setup anything, just go to https://4ab5-186-226-191-138.ngrok.io/. However, if you want to run everything locally, the steps are simple:**
 - frontend setup on ubuntu:
     - on frontend/ run: npm install
     - --> to start, run: npm run dev
