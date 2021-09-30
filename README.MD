@@ -17,4 +17,6 @@ https://user-images.githubusercontent.com/43099047/134788890-56064e63-edbc-43fd-
     - on backend/ run: pip3 install -r requirements.txt
     - on backend/rcss-log-extractor/ run: sudo apt-get install default-jre default-jdk
     - --> to start, run: python3 server.py
+    - 
 # Contributing
+To contribute, create a new branch (from the "dev" branch) with a descriptive name for what you will do. Commit your changes to this new branch and then make a pull request to the "dev" branch.
