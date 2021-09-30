@@ -6,7 +6,7 @@ export default function index() {
     <div className="h-screen overflow-y-scroll">
       {/* Head */}
       <Head>
-        <title>Soccer Web Monitor</title>
+        <title>WebSoccerMonitor</title>
       </Head>
 
       {/* Main Content */}
