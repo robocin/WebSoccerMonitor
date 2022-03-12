@@ -7,6 +7,7 @@ Documentation: https://robocin.notion.site/WebSoccerMonitor-Documentation-00f6b4
 # Setup Guide
 **You don't have to download or setup anything, just go to https://4ab5-186-226-191-138.ngrok.io/. However, if you want to run everything locally, the steps are simple:**
 - frontend setup on ubuntu:
+    - Make sure you have node v16.14.0 or higher installed.
     - on frontend/ run: npm install
     - --> to start, run: npm run dev
 
