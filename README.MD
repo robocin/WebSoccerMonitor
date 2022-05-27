@@ -22,3 +22,7 @@ Documentation: https://robocin.notion.site/WebSoccerMonitor-Documentation-00f6b4
     - 
 # Contributing
 To contribute, create a new branch (from the "dev" branch) with a descriptive name for what you will do. Commit your changes to this new branch and then make a pull request to the "dev" branch.
+
+---
+
+![image](https://user-images.githubusercontent.com/43099047/170765581-897c9d29-694a-4c47-880a-edb0e1b385a8.png)
